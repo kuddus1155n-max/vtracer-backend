@@ -1,6 +1,0 @@
-vtracer==0.6.4
-flask
-flask-cors
-opencv-python-headless==4.8.1.78
-numpy<2
-gunicorn
