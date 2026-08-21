@@ -1,0 +1,4109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nur Meta Ai — Icon Set Prompt Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{
+    --bg:#0D0F15;
+    --panel:#181B25;
+    --panel-2:#1E222D;
+    --border:#2A2F3D;
+    --text:#F3F5FA;
+    --text-dim:#8D96AC;
+    --accent:#7C9CFF;
+    --accent-2:#B98CFF;
+    --accent-soft:rgba(124,156,255,0.14);
+    --warm:#FFC24E;
+    --warm-soft:rgba(255,194,78,0.12);
+    --danger:#FF6E6E;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 12% 0%, rgba(124,156,255,0.10), transparent 45%),
+      radial-gradient(circle at 100% 8%, rgba(185,140,255,0.06), transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(255,194,78,0.05), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  .layout{
+    display:grid;
+    grid-template-columns:320px minmax(0,1fr);
+    gap:20px;
+    align-items:start;
+  }
+  .sidebar{
+    position:sticky;
+    top:20px;
+    max-height:calc(100vh - 40px);
+    overflow-y:auto;
+    padding-right:4px;
+  }
+  .sidebar .card{margin-bottom:16px;}
+  .main-col{min-width:0;}
+
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{position:static;max-height:none;overflow-y:visible;padding-right:0;}
+  }
+
+  header{margin-bottom:22px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--warm);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+    background:linear-gradient(90deg, var(--text) 0%, var(--accent) 60%, var(--accent-2) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    display:inline-block;
+  }
+  .sub{color:var(--text-dim);font-size:13.5px;line-height:1.55;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .card-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin:0 0 14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card-title::before{
+    content:'';
+    width:6px;height:6px;
+    background:var(--accent);
+    border-radius:1px;
+    display:inline-block;
+  }
+
+  .settings-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 16px;
+  }
+  .settings-row + .settings-row{ margin-top:12px; }
+  .settings-row.featured{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+  }
+  .settings-row-title-line{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .settings-row-badge{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:#0B0D12;
+    background:var(--accent);
+    padding:2px 7px;
+    border-radius:999px;
+    flex-shrink:0;
+  }
+  .settings-row-title{
+    font-size:14px;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:3px;
+  }
+  .settings-row-desc{
+    font-size:12px;
+    color:var(--text-dim);
+    line-height:1.5;
+  }
+  .toggle-switch{
+    position:relative;
+    flex:0 0 auto;
+    width:42px;
+    height:24px;
+    border-radius:999px;
+    background:var(--border);
+    border:none;
+    cursor:pointer;
+    transition:background 0.2s ease;
+    padding:0;
+  }
+  .toggle-switch::after{
+    content:'';
+    position:absolute;
+    top:3px; left:3px;
+    width:18px; height:18px;
+    background:#fff;
+    border-radius:50%;
+    transition:transform 0.2s ease;
+  }
+  .toggle-switch.on{ background:var(--accent); }
+  .toggle-switch.on::after{ transform:translateX(18px); }
+
+  label{
+    display:block;
+    font-size:12.5px;
+    color:var(--text-dim);
+    margin-bottom:6px;
+    font-weight:500;
+  }
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  input[type="text"], input[type="password"], select, textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus{border-color:var(--accent);}
+  input[type="number"]{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    outline:none;
+  }
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .hint{font-size:11.5px;color:var(--text-dim);margin-top:5px;line-height:1.5;}
+
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;height:4px;
+    background:var(--border);
+    border-radius:2px;
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px;height:16px;
+    border-radius:50%;
+    background:var(--warm);
+    cursor:pointer;
+    border:2px solid var(--bg);
+  }
+  .slider-row{display:flex;align-items:center;gap:12px;}
+  .slider-val{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--warm);
+    min-width:44px;
+    text-align:right;
+  }
+
+  .style-pills{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{
+    padding:7px 13px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    font-size:12.5px;
+    color:var(--text-dim);
+    cursor:pointer;
+    background:var(--panel-2);
+    transition:all .15s;
+  }
+  .pill.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+  }
+
+  #generateBtn{
+    width:100%;
+    background:var(--accent);
+    color:#0B0D12;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    letter-spacing:0.01em;
+    transition:filter .15s, transform .1s;
+  }
+  #generateBtn:hover{filter:brightness(1.08);}
+  #generateBtn:active{transform:scale(0.99);}
+  #generateBtn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .grid-blueprint{
+    position:relative;
+    background:
+      linear-gradient(var(--border) 1px, transparent 1px) 0 0/100% var(--cellh,60px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0/var(--cellw,60px) 100%,
+      var(--panel-2);
+    border:1px dashed var(--border);
+    border-radius:8px;
+    padding:0;
+    overflow:hidden;
+  }
+  #cellGrid{
+    display:grid;
+    gap:1px;
+    background:var(--border);
+  }
+  .cell{
+    background:var(--panel-2);
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:4px;
+    text-align:center;
+  }
+  .cell .coord{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--text-dim);
+    opacity:0.55;
+  }
+  .cell .label{
+    font-size:10px;
+    color:var(--text);
+    margin-top:2px;
+    line-height:1.25;
+    font-weight:500;
+  }
+  .cell.filled{background:var(--warm-soft);}
+  .cell.filled .coord{color:var(--warm);opacity:0.8;}
+
+  .output-box{
+    background:#0E0F14;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    line-height:1.7;
+    color:#D8DCEA;
+    white-space:pre-wrap;
+    word-break:break-word;
+    max-height:340px;
+    overflow-y:auto;
+  }
+  .output-actions{display:flex;gap:8px;margin-top:10px;}
+  .btn-ghost{
+    flex:1;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px;
+    border-radius:8px;
+    font-size:12.5px;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    font-weight:500;
+  }
+  .btn-ghost:hover{border-color:var(--accent);}
+
+  .status{
+    font-size:12px;
+    color:var(--text-dim);
+    text-align:center;
+    padding:10px;
+    display:none;
+  }
+  .status.show{display:block;}
+  .status.error{color:var(--danger);}
+
+  /* ---- AI Vectorizer section (isolated styles) ---- */
+  .vec-section{margin-top:26px;}
+  .vec-header{margin-bottom:16px;}
+  .vec-header .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--warm);
+    text-transform:uppercase;
+  }
+  .vec-header h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:22px;
+    margin:4px 0 4px;
+  }
+  .vec-header .sub{font-size:13px;color:var(--text-dim);line-height:1.5;}
+
+  .vec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:860px){.vec-grid{grid-template-columns:1fr;}}
+
+  .vec-dropzone{
+    background:var(--panel-2);
+    border:1.5px dashed var(--border);
+    border-radius:10px;
+    padding:26px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .vec-dropzone:hover, .vec-dropzone.dragover{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .vec-dropzone .vec-drop-icon{font-size:26px;margin-bottom:8px;opacity:0.8;}
+  .vec-dropzone .vec-drop-title{font-size:13.5px;font-weight:600;color:var(--text);}
+  .vec-dropzone .vec-drop-sub{font-size:11.5px;color:var(--text-dim);margin-top:4px;}
+  .vec-dropzone input[type="file"]{display:none;}
+
+  .vec-preview-box{
+    background:#0E0F14;
+    border:1px solid var(--border);
+    border-radius:10px;
+    min-height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+    padding:10px;
+  }
+  .vec-preview-box .vec-placeholder{font-size:12px;color:var(--text-dim);text-align:center;padding:20px;}
+  .vec-preview-box img, .vec-preview-box svg{max-width:100%;max-height:280px;object-fit:contain;}
+  .vec-preview-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:8px;
+  }
+
+  .vec-options{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap;}
+  .vec-options .field{flex:1;min-width:150px;margin-bottom:0;}
+  .vec-options select{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 10px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+  }
+
+  .vec-actions{display:flex;gap:8px;margin-top:6px;}
+  #vectorizeBtn{
+    flex:1;
+    background:var(--accent);
+    color:#0B0D12;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    letter-spacing:0.01em;
+    transition:filter .15s, transform .1s;
+  }
+  #vectorizeBtn:hover{filter:brightness(1.08);}
+  #vectorizeBtn:active{transform:scale(0.99);}
+  #vectorizeBtn:disabled{opacity:0.5;cursor:not-allowed;}
+  #downloadSvgBtn:disabled{opacity:0.5;cursor:not-allowed;}
+  #downloadEpsBtn:disabled{opacity:0.5;cursor:not-allowed;}
+  #vecRemoveBtn:disabled{opacity:0.5;cursor:not-allowed;}
+  #vecKeyHint code{background:var(--panel-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:10.5px;}
+  #vecSegmentBtn{
+    flex:1;
+    background:var(--accent-2);
+    color:#0B0D12;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    letter-spacing:0.01em;
+    transition:filter .15s, transform .1s;
+  }
+  #vecSegmentBtn:hover{filter:brightness(1.08);}
+  #vecSegmentBtn:active{transform:scale(0.99);}
+  #vecSegmentBtn:disabled{opacity:0.5;cursor:not-allowed;}
+  #vecDownloadLayersBtn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .vec-swatches{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+  .vec-swatch-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 12px;
+    cursor:pointer;
+    transition:border-color .15s, opacity .15s;
+  }
+  .vec-swatch-row:hover{border-color:var(--accent);}
+  .vec-swatch-row.dimmed{opacity:0.4;}
+  .vec-swatch-chip{
+    width:20px;height:20px;border-radius:6px;flex:0 0 auto;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .vec-swatch-hex{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--text);
+    flex:0 0 auto;
+    min-width:72px;
+  }
+  .vec-swatch-bar-wrap{flex:1;height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;}
+  .vec-swatch-bar{height:100%;border-radius:3px;}
+  .vec-swatch-pct{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--text-dim);
+    flex:0 0 auto;
+    min-width:44px;
+    text-align:right;
+  }
+  .vec-swatch-hint{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+  /* ---- Vector Quality Check ---- */
+  .vec-quality-summary{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .vec-quality-badge{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:20px;
+    letter-spacing:0.01em;
+    flex:0 0 auto;
+  }
+  .vec-quality-badge.pass{background:rgba(90,214,146,0.14);color:#5AD692;}
+  .vec-quality-badge.warn{background:var(--warm-soft);color:var(--warm);}
+  .vec-quality-badge.fail{background:rgba(255,110,110,0.14);color:var(--danger);}
+  .vec-quality-stats{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    font-size:12px;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .vec-quality-stats b{color:var(--text);font-weight:600;}
+
+  .vec-quality-list{display:flex;flex-direction:column;gap:8px;}
+  .vec-quality-row{
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:11px 14px;
+  }
+  .vec-quality-row-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:default;
+  }
+  .vec-quality-row.expandable .vec-quality-row-head{cursor:pointer;}
+  .vec-quality-icon{
+    flex:0 0 auto;
+    width:20px;height:20px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;
+    font-weight:700;
+  }
+  .vec-quality-icon.pass{background:rgba(90,214,146,0.16);color:#5AD692;}
+  .vec-quality-icon.warn{background:var(--warm-soft);color:var(--warm);}
+  .vec-quality-icon.fail{background:rgba(255,110,110,0.16);color:var(--danger);}
+  .vec-quality-row-title{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+  .vec-quality-row-count{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--text-dim);
+    flex:0 0 auto;
+  }
+  .vec-quality-caret{
+    flex:0 0 auto;
+    font-size:10px;
+    color:var(--text-dim);
+    transition:transform .15s;
+  }
+  .vec-quality-row.open .vec-quality-caret{transform:rotate(90deg);}
+  .vec-quality-row-desc{font-size:11.5px;color:var(--text-dim);margin-top:5px;line-height:1.5;}
+  .vec-quality-detail{
+    display:none;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--text-dim);
+    line-height:1.9;
+  }
+  .vec-quality-row.open .vec-quality-detail{display:block;}
+  .vec-quality-detail div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  #vecRecheckBtn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  #vecCompareBtn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  /* ---- Before/After Comparison Modal ---- */
+  .vec-compare-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(6,7,10,0.78);
+    backdrop-filter:blur(3px);
+    z-index:999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .vec-compare-overlay.open{display:flex;}
+  .vec-compare-modal{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    width:100%;
+    max-width:920px;
+    max-height:92vh;
+    overflow-y:auto;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .vec-compare-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .vec-compare-head h3{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:0;}
+  .vec-compare-head .sub{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
+  .vec-compare-close{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    width:32px;height:32px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+    line-height:1;
+    flex:0 0 auto;
+  }
+  .vec-compare-close:hover{border-color:var(--accent);color:var(--text);}
+
+  .vec-compare-tabs{display:flex;gap:4px;background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:3px;width:fit-content;}
+  .vec-compare-tab{
+    padding:7px 14px;
+    border-radius:7px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--text-dim);
+    cursor:pointer;
+    user-select:none;
+  }
+  .vec-compare-tab.active{background:var(--accent);color:#0B0D12;}
+
+  .vec-checker-bg{
+    background:
+      linear-gradient(45deg,#20232d 25%,transparent 25%,transparent 75%,#20232d 75%,#20232d),
+      linear-gradient(45deg,#20232d 25%,#14161d 25%,#14161d 75%,#20232d 75%,#20232d);
+    background-size:20px 20px;
+    background-position:0 0,10px 10px;
+    background-color:#0E0F14;
+  }
+
+  .vec-compare-stage{
+    position:relative;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    height:min(58vh,460px);
+    touch-action:none;
+    user-select:none;
+  }
+  .vec-compare-stage img{
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:100%;
+    object-fit:contain;
+    pointer-events:none;
+  }
+  .vec-cmp-divider{
+    position:absolute;
+    top:0;bottom:0;
+    width:2px;
+    background:#fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.35);
+    pointer-events:none;
+  }
+  .vec-cmp-handle{
+    position:absolute;
+    top:50%;
+    width:34px;height:34px;
+    background:var(--accent);
+    border:2px solid #fff;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    cursor:ew-resize;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#0B0D12;
+    font-size:13px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.4);
+    touch-action:none;
+  }
+  .vec-cmp-tag{
+    position:absolute;
+    top:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    background:rgba(13,15,21,0.72);
+    color:var(--text);
+    padding:4px 9px;
+    border-radius:6px;
+    pointer-events:none;
+  }
+  .vec-cmp-tag.before{left:10px;}
+  .vec-cmp-tag.after{right:10px;}
+
+  .vec-compare-side-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    height:min(58vh,460px);
+  }
+  @media (max-width:640px){.vec-compare-side-grid{grid-template-columns:1fr;height:auto;}}
+  .vec-compare-side-panel{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .vec-compare-side-panel .vec-compare-side-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .vec-compare-side-panel .vec-compare-side-box{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    min-height:220px;
+  }
+  @media (max-width:640px){.vec-compare-side-panel .vec-compare-side-box{height:240px;}}
+  .vec-compare-side-panel img{max-width:100%;max-height:100%;object-fit:contain;}
+
+  .vec-compare-hint{font-size:11.5px;color:var(--text-dim);text-align:center;}
+
+  .dot-loader{display:inline-flex;gap:4px;vertical-align:middle;margin-right:6px;}
+  .dot-loader span{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--accent);
+    animation:pulse 1s infinite ease-in-out;
+  }
+  .dot-loader span:nth-child(2){animation-delay:.15s;}
+  .dot-loader span:nth-child(3){animation-delay:.3s;}
+  @keyframes pulse{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+
+  .key-note{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
+  .key-note a{color:var(--accent);}
+
+  .key-add-row{display:flex;gap:8px;}
+  .key-add-row input{flex:1;}
+  .btn-add{
+    background:var(--accent);
+    color:#0B0D12;
+    border:none;
+    padding:0 16px;
+    border-radius:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-add:hover{filter:brightness(1.08);}
+
+  .key-group-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:2px 0 10px;flex-wrap:wrap;gap:8px;
+  }
+  .key-group-title{
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-weight:600;
+  }
+  .key-group-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .key-bulk-btn{
+    font-size:11px;padding:6px 12px;border-radius:7px;
+    border:1px solid var(--border);background:var(--panel-2);
+    color:var(--text-dim);cursor:pointer;font-weight:600;
+    font-family:'Inter',sans-serif;
+  }
+  .key-bulk-btn.on-btn:hover{color:#3CCB7F;border-color:#3CCB7F;}
+  .key-bulk-btn.off-btn:hover{color:var(--danger);border-color:var(--danger);}
+  .key-bulk-btn.check-btn{color:var(--accent);border-color:var(--accent);}
+  .key-bulk-btn.check-btn:hover{background:var(--accent-soft);}
+  .key-bulk-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .key-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .key-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 12px;
+  }
+  .key-item.active-key{border-color:var(--warm);}
+  .key-item.exhausted{opacity:0.55;}
+  .key-item.deactivated{opacity:0.5;}
+  .key-item .key-left{display:flex;align-items:center;gap:9px;min-width:0;flex:1;}
+  .key-item .key-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:#3CCB7F;flex-shrink:0;
+  }
+  .key-item.exhausted .key-dot{background:var(--danger);}
+  .key-item .key-masked{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--text);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .key-status-pill{
+    display:flex;align-items:center;gap:6px;flex-shrink:0;
+  }
+  .key-active-badge{
+    font-size:10px;font-family:'JetBrains Mono',monospace;
+    padding:3px 8px;border-radius:20px;
+    background:rgba(60,203,127,0.12);color:#3CCB7F;
+    white-space:nowrap;
+  }
+  .key-cooldown{
+    font-size:10px;font-family:'JetBrains Mono',monospace;
+    padding:3px 8px;border-radius:20px;
+    background:var(--warm-soft);color:var(--warm);
+    white-space:nowrap;
+    display:none;
+  }
+  .key-cooldown.show{display:inline-block;}
+  .key-item.deactivated .key-active-badge{background:var(--border);color:var(--text-dim);}
+  .key-mini-toggle{
+    position:relative;flex:0 0 auto;
+    width:32px;height:19px;border-radius:999px;
+    background:var(--border);border:none;cursor:pointer;
+    transition:background .2s ease;padding:0;
+  }
+  .key-mini-toggle::after{
+    content:'';position:absolute;top:2.5px;left:2.5px;
+    width:14px;height:14px;background:#fff;border-radius:50%;
+    transition:transform .2s ease;
+  }
+  .key-mini-toggle.on{background:#3CCB7F;}
+  .key-mini-toggle.on::after{transform:translateX(13px);}
+  .key-valid-badge{
+    font-size:10.5px;font-weight:600;white-space:nowrap;
+    color:#3CCB7F;
+  }
+  .key-valid-badge.invalid{color:var(--danger);}
+  .key-valid-badge.pending{color:var(--text-dim);}
+  .key-item .key-remove{
+    background:none;border:none;color:var(--text-dim);
+    cursor:pointer;font-size:16px;line-height:1;
+    padding:2px 4px;flex-shrink:0;
+  }
+  .key-item .key-remove:hover{color:var(--danger);}
+  .key-empty{
+    font-size:12px;color:var(--text-dim);
+    text-align:center;padding:10px;
+    border:1px dashed var(--border);
+    border-radius:8px;
+  }
+  .key-view-all{
+    width:100%;margin-top:4px;
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    color:var(--accent);
+    font-size:12.5px;font-weight:700;
+    padding:9px;border-radius:8px;
+    cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .key-view-all:hover{filter:brightness(1.1);}
+
+  .mode-tabs{display:flex;gap:8px;}
+  .mode-tab{
+    flex:1;
+    text-align:center;
+    padding:9px 10px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--text-dim);
+    cursor:pointer;
+    background:var(--panel-2);
+    transition:all .15s;
+  }
+  .mode-tab.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+  }
+
+  input[type="file"]{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    padding:9px 10px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+  }
+  #refImagePreviewWrap img{display:block;}
+
+  .batch-list{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto;}
+  .batch-item{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 12px;
+  }
+  .batch-item-top{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;
+  }
+  .batch-item-name{
+    font-size:12.5px;color:var(--text);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .batch-item-status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    flex-shrink:0;
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .batch-item-status.queued{color:var(--text-dim);background:rgba(136,144,163,0.12);}
+  .batch-item-status.working{color:var(--warm);background:var(--warm-soft);}
+  .batch-item-status.done{color:#3CCB7F;background:rgba(60,203,127,0.12);}
+  .batch-item-status.error{color:var(--danger);background:rgba(255,107,107,0.12);}
+  .batch-item-prompt{
+    display:none;
+    margin-top:8px;
+    background:#0E0F14;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    line-height:1.6;
+    color:#D8DCEA;
+    white-space:pre-wrap;
+    word-break:break-word;
+    max-height:180px;
+    overflow-y:auto;
+  }
+  .batch-item.expanded .batch-item-prompt{display:block;}
+  .batch-progress-bar{
+    height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px;
+  }
+  .batch-progress-bar-fill{
+    height:100%;background:var(--accent);width:0%;transition:width .2s;
+  }
+  .batch-summary{font-size:11.5px;color:var(--text-dim);margin-bottom:10px;}
+
+  /* ---- Professional polish pass ---- */
+  * { font-weight:700 !important; }
+
+  body{
+    background:
+      radial-gradient(circle at 12% 0%, rgba(124,156,255,0.12), transparent 45%),
+      radial-gradient(circle at 100% 8%, rgba(185,140,255,0.08), transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(255,194,78,0.06), transparent 40%),
+      var(--bg);
+  }
+  header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 20px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  header::before{
+    content:'NM';
+    flex:0 0 auto;
+    width:44px;height:44px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:16px;
+    color:#0B0D12;
+    background:linear-gradient(135deg, var(--accent), var(--accent-2));
+    letter-spacing:0.02em;
+  }
+  .header-text{min-width:0;}
+  .eyebrow{margin-bottom:2px;}
+  h1{font-size:24px;margin-top:0;}
+  .sub{max-width:640px;}
+
+  .card{
+    box-shadow:0 4px 18px rgba(0,0,0,0.18);
+    transition:border-color .15s;
+  }
+  .card:hover{border-color:#3A4155;}
+
+  .card-title{
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+
+  #generateBtn{
+    box-shadow:0 6px 20px rgba(124,156,255,0.25);
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px;}
+  ::-webkit-scrollbar-thumb:hover{background:#3A4155;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-text">
+      <h1>Nur Meta Ai</h1>
+      <div class="sub">Give a name and grid size — get a single master prompt you can paste into any image generator (Midjourney, SD, etc.) to create the whole icon set in one image.</div>
+    </div>
+  </header>
+
+  <div class="layout">
+  <div class="sidebar">
+
+  <div class="card">
+    <div class="card-title">API Provider</div>
+    <div class="field">
+      <div class="mode-tabs" id="providerTabs">
+        <div class="mode-tab active" data-provider="gemini">Gemini</div>
+        <div class="mode-tab" data-provider="groq">Groq (Free)</div>
+      </div>
+      <div class="hint" id="providerHint">Get a free Gemini key from Google AI Studio and use it.</div>
+    </div>
+    <div class="field">
+      <label>Rate limit (max requests per minute per key)</label>
+      <input type="number" id="rpmLimitInput" min="1" max="120" value="10" style="max-width:120px;">
+      <div class="hint">If this limit is exceeded, the tool will automatically wait before sending the next request, so keys don't get flagged as "quota exhausted" by the free-tier rate limit. Lower is safer, higher is faster but riskier.</div>
+    </div>
+    <div class="field">
+      <label>TPM limit (max tokens per minute per key)</label>
+      <input type="number" id="tpmLimitInput" min="500" max="2000000" step="500" value="8000" style="max-width:140px;">
+      <div class="hint">The token cost of each request (prompt + image + output) is calculated to stay under this limit per key — when a key gets close to the limit it's skipped for the moment and another key is tried; if all keys are full, the tool waits for whichever frees up soonest. For Groq's vision model, keeping the default 8000 TPM is good; for Gemini you can set it higher.</div>
+    </div>
+    <div class="field">
+      <div class="key-add-row">
+        <input type="password" id="apiKeyInput" placeholder="Paste a new Gemini API key">
+        <button id="addKeyBtn" class="btn-add">+ Add</button>
+      </div>
+      <div class="key-note" id="keyNote">If you add multiple keys (from different Google accounts), the tool will automatically try the next key when the free tier quota runs out. Keys are saved in your browser — only you can see them. Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.</div>
+    </div>
+    <div id="keyList" class="key-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Processing</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-title">Batch Mode</div>
+        <div class="settings-row-desc">Use all keys in parallel — when there are multiple themes/images, prompts will be generated using every active key at once (in parallel) instead of waiting one after another.</div>
+      </div>
+      <button type="button" id="batchParallelToggle" class="toggle-switch on" role="switch" aria-checked="true"></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Auto Retry</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-title">Auto Retry</div>
+        <div class="settings-row-desc">As long as a key is active, failed prompts are retried automatically — if a key hits a temporary error/timeout, the tool will retry with another active key or on its own after a short wait.</div>
+      </div>
+      <button type="button" id="autoRetryToggle" class="toggle-switch on" role="switch" aria-checked="true"></button>
+    </div>
+  </div>
+
+  </div>
+  <div class="main-col">
+
+  <div class="card">
+    <div class="card-title">Concept</div>
+
+    <div class="field">
+      <div class="mode-tabs" id="modeTabs">
+        <div class="mode-tab active" data-mode="single">Single Theme</div>
+        <div class="mode-tab" data-mode="batch">Batch Queue (CSV)</div>
+        <div class="mode-tab" data-mode="bulkprompt">Bulk Prompt Generator</div>
+      </div>
+    </div>
+
+    <div class="field" id="singleThemeField">
+      <label>Icon name / theme</label>
+      <input type="text" id="iconName" placeholder="e.g. upgrade">
+    </div>
+
+    <div class="field" id="batchThemeField" style="display:none;">
+      <label>Theme list (one per line, or comma-separated — pasting CSV also works)</label>
+      <textarea id="batchThemes" rows="6" placeholder="upgrade
+security
+analytics
+onboarding"></textarea>
+      <div class="hint">Each line or comma-separated item is treated as a separate theme. Master prompts are generated one after another, and at the end you can download them all together as a ZIP or CSV.</div>
+    </div>
+
+    <div class="field" id="bulkPromptField" style="display:none;">
+      <label>ছবি আপলোড করুন (Bulk — একাধিক দেওয়া যাবে)</label>
+      <input type="file" id="bulkImageInput" accept="image/*" multiple>
+      <div class="hint">AI প্রতিটা ছবি আলাদাভাবে দেখে সেটার একটা accurate recreation prompt লিখে দেবে — যেটা কোনো ইমেজ জেনারেটরে বসালে ওই ডিজাইনটা ক্লিন flat vector / logo / icon হিসেবে আবার বানানো যাবে। থিম নাম বা গ্রিড লাগবে না, শুধু ছবি দিন।</div>
+      <div id="bulkImagePreviewWrap" style="display:none;">
+        <div id="bulkImagePreviewGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+        <button type="button" id="bulkRemoveImagesBtn" class="btn-ghost" style="margin-top:8px;width:auto;padding:7px 14px;">সব ইমেজ সরান</button>
+      </div>
+    </div>
+
+    <div class="field" id="refImageField">
+      <label>Reference image (optional, multiple allowed)</label>
+      <input type="file" id="refImage" accept="image/*" multiple>
+      <div class="hint">A separate master prompt is generated for each image you give — one prompt per image, using the same theme/settings. Giving a single image produces a single prompt. In Batch theme mode, the same images are also used for every theme.</div>
+      <div id="refImagePreviewWrap" style="display:none;">
+        <div id="refImagePreviewGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+        <button type="button" id="removeImageBtn" class="btn-ghost" style="margin-top:8px;width:auto;padding:7px 14px;">Remove all images</button>
+      </div>
+    </div>
+
+    <div class="field" id="gridSizeField">
+      <label>Grid size</label>
+      <div class="row2">
+        <div>
+          <input type="number" id="cols" min="1" max="6" value="3">
+          <div class="hint">Columns</div>
+        </div>
+        <div>
+          <input type="number" id="rows" min="1" max="6" value="3">
+          <div class="hint">Rows</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="styleField">
+      <label>Style</label>
+      <div class="style-pills" id="stylePills">
+        <div class="pill active" data-style="Line Art">Line Art</div>
+        <div class="pill" data-style="Solid Glyph">Solid Glyph</div>
+        <div class="pill" data-style="Duotone">Duotone</div>
+        <div class="pill" data-style="Flat Color">Flat Color</div>
+        <div class="pill" data-style="3D Render">3D Render</div>
+        <div class="pill" data-style="Outline Rounded">Outline Rounded</div>
+      </div>
+    </div>
+
+    <div class="field" id="strokeField">
+      <label>Line thickness (px)</label>
+      <div class="slider-row">
+        <input type="range" id="strokeWidth" min="1" max="12" value="2">
+        <span class="slider-val" id="strokeVal">2px</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Extra notes (optional)</label>
+      <textarea id="extraNotes" rows="2" placeholder="e.g. transparent background, corporate feel"></textarea>
+    </div>
+  </div>
+
+  <div class="card" id="gridPreviewCard">
+    <div class="card-title">Live Grid Preview</div>
+    <div class="grid-blueprint">
+      <div id="cellGrid"></div>
+    </div>
+  </div>
+
+  <button id="generateBtn">Generate Master Prompt</button>
+  <div class="status" id="status"></div>
+
+  <div class="card" id="outputCard" style="display:none;margin-top:16px;">
+    <div class="card-title">Master Prompt</div>
+    <div class="output-box" id="outputBox"></div>
+    <div class="output-actions">
+      <button class="btn-ghost" id="copyBtn">Copy</button>
+      <button class="btn-ghost" id="regenBtn">Regenerate</button>
+    </div>
+  </div>
+
+  <div class="card" id="batchCard" style="display:none;margin-top:16px;">
+    <div class="card-title">Batch Queue</div>
+    <div class="batch-progress-bar"><div class="batch-progress-bar-fill" id="batchProgressFill"></div></div>
+    <div class="batch-summary" id="batchSummary"></div>
+    <div id="batchList" class="batch-list"></div>
+    <div class="output-actions" id="batchExportActions" style="display:none;margin-top:12px;">
+      <button class="btn-ghost" id="exportZipBtn">Download ZIP</button>
+      <button class="btn-ghost" id="exportCsvBtn">Download CSV</button>
+    </div>
+  </div>
+
+  </div>
+  </div>
+
+  <div class="vec-section">
+    <div class="vec-header">
+      <div class="eyebrow">New</div>
+      <h2>AI Vectorizer</h2>
+      <div class="sub">Turn a JPG/PNG image into clean SVG paths using VTracer — the open-source raster-to-vector engine — running on your own local backend.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">VTracer Backend Server</div>
+      <div class="field">
+        <label>Backend URL</label>
+        <input type="text" id="vecBackendUrl" placeholder="http://localhost:8787/vectorize" value="http://localhost:8787/vectorize">
+      </div>
+      <div class="key-add-row">
+        <button id="vecSaveUrlBtn" class="btn-add" style="width:auto;">Save URL</button>
+        <button id="vecTestConnBtn" class="btn-add" style="width:auto;background:transparent;color:var(--text-dim);border:1px solid var(--border);">Test Connection</button>
+      </div>
+      <div class="hint" id="vecKeyHint">This tool sends your image to a small local VTracer server that does the actual vectorizing — nothing goes to any third-party cloud. Download the server script below and run it once with <code>python vtracer_server.py</code> (needs <code>pip install vtracer flask flask-cors opencv-python-headless numpy</code>).</div>
+    </div>
+
+    <div class="card">
+      <div class="vec-grid">
+        <div>
+          <div class="vec-preview-label">Source Image</div>
+          <div class="vec-dropzone" id="vecDropzone">
+            <input type="file" id="vecFileInput" accept="image/jpeg,image/png,image/jpg">
+            <div id="vecDropzoneContent">
+              <div class="vec-drop-icon">🖼️</div>
+              <div class="vec-drop-title">Click to upload or drag & drop</div>
+              <div class="vec-drop-sub">JPG or PNG only</div>
+            </div>
+          </div>
+          <div class="vec-preview-box" id="vecSourcePreview" style="margin-top:10px;">
+            <div class="vec-placeholder" id="vecSourcePlaceholder">Preview will appear here</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="vec-preview-label">Vectorized Result (SVG)</div>
+          <div class="vec-preview-box" id="vecResultPreview">
+            <div class="vec-placeholder" id="vecResultPlaceholder">Vectorized SVG will appear here</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vec-options">
+        <div class="field">
+          <label>Color mode</label>
+          <select id="vecColorMode">
+            <option value="color" selected>Full Color</option>
+            <option value="binary">Black & White (line art)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-row featured" style="margin-top:2px;">
+        <div>
+          <div class="settings-row-title settings-row-title-line">Microstock Clean<span class="settings-row-badge">Stock-ready</span></div>
+          <div class="settings-row-desc">One-toggle preset for submitting to stock marketplaces (Adobe Stock, Shutterstock, Freepik, etc.). Automatically simplifies paths, drops tiny stray objects, removes duplicate/near-duplicate shapes, and collapses unnecessary anchor points on top of whatever's set below -- forcing Simplify shapes and Clean up SVG paths on for this render even if either is switched off. The result stays plain, native SVG paths the whole time, so it's still 100% editable in Illustrator, Inkscape, or any vector editor.</div>
+        </div>
+        <button type="button" id="vecMicrostockToggle" class="toggle-switch" role="switch" aria-checked="false"></button>
+      </div>
+
+      <div class="field" style="margin-top:14px;">
+        <label>Detail</label>
+        <div class="slider-row">
+          <span class="hint" style="flex-shrink:0;">Low</span>
+          <input type="range" id="vecDetail" min="0" max="100" step="1" value="50">
+          <span class="hint" style="flex-shrink:0;">High</span>
+          <div class="slider-val" id="vecDetailVal">Medium</div>
+        </div>
+        <div class="hint">Low creates simpler vectors with fewer paths and anchor points. High preserves more of the image's fine detail.</div>
+      </div>
+
+      <div class="field" style="margin-top:14px;">
+        <label>Smoothness</label>
+        <div class="slider-row">
+          <span class="hint" style="flex-shrink:0;">Crisp</span>
+          <input type="range" id="vecSmoothness" min="0" max="100" step="1" value="50">
+          <span class="hint" style="flex-shrink:0;">Smooth</span>
+          <div class="slider-val" id="vecSmoothnessVal">Medium</div>
+        </div>
+        <div class="hint">Controls how aggressively traced paths are simplified and smoothed after tracing. Low keeps paths close to the raw trace with more anchor points and sharper corners; high removes more anchor points and rounds curves into flowing Bezier arcs. Real sharp corners are always kept crisp either way.</div>
+      </div>
+
+      <div class="settings-row" style="margin-top:12px;">
+        <div>
+          <div class="settings-row-title">Remove background</div>
+          <div class="settings-row-desc">Automatically detects a flat white (or other solid-color) background around the edges of the image and makes it transparent before tracing, so the SVG contains just the artwork — no background rectangle behind it. Safely does nothing if the image doesn't have a flat, removable background (e.g. a busy photo).</div>
+        </div>
+        <button type="button" id="vecBgRemoveToggle" class="toggle-switch on" role="switch" aria-checked="true"></button>
+      </div>
+
+      <div class="vec-options" id="vecBgRemoveOptions" style="margin-top:12px;">
+        <div class="field">
+          <label>Background target</label>
+          <select id="vecBgMode">
+            <option value="auto" selected>Auto-detect (any solid color)</option>
+            <option value="white">White / near-white</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tolerance</label>
+          <div class="slider-row">
+            <input type="range" id="vecBgTolerance" min="5" max="80" step="1" value="30">
+            <div class="slider-val" id="vecBgToleranceVal">30</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-row" style="margin-top:12px;">
+        <div>
+          <div class="settings-row-title">Limit number of colors</div>
+          <div class="settings-row-desc">Quantizes the image to an exact palette size before tracing, so you get precise control over how many colors the vector uses (approx. 2–32). Overrides the color count that "Detail level" would normally pick. Requires "Simplify shapes before tracing", which turns on automatically while this is enabled.</div>
+        </div>
+        <button type="button" id="vecColorCountToggle" class="toggle-switch" role="switch" aria-checked="false"></button>
+      </div>
+
+      <div class="field" id="vecColorCountField" style="margin-top:12px;display:none;">
+        <label>Color count</label>
+        <div class="slider-row">
+          <input type="range" id="vecColorCount" min="2" max="32" step="1" value="16">
+          <div class="slider-val" id="vecColorCountVal">16</div>
+        </div>
+        <div class="hint">Approximate — VTracer's own tracing can occasionally merge or drop a color that covers a tiny area.</div>
+      </div>
+
+      <div class="settings-row" style="margin-top:12px;">
+        <div>
+          <div class="settings-row-title">Simplify shapes before tracing</div>
+          <div class="settings-row-desc">Detects the major shapes/edges first and removes pixel-level noise, JPEG artifacts, and gradient banding — so VTracer traces clean flat regions instead of every pixel. Turn off to trace the raw image as-is.</div>
+        </div>
+        <button type="button" id="vecSimplifyToggle" class="toggle-switch on" role="switch" aria-checked="true"></button>
+      </div>
+
+      <div class="settings-row" style="margin-top:12px;">
+        <div>
+          <div class="settings-row-title">Clean up SVG paths</div>
+          <div class="settings-row-desc">After tracing: removes duplicate paths, tiny stray objects, broken/degenerate paths, and unnecessary overlaps, and collapses redundant anchor points. Turn off to keep VTracer's raw output as-is.</div>
+        </div>
+        <button type="button" id="vecCleanupToggle" class="toggle-switch on" role="switch" aria-checked="true"></button>
+      </div>
+
+      <div class="vec-actions">
+        <button id="vectorizeBtn" disabled>Vectorize</button>
+        <button class="btn-ghost" id="downloadSvgBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Download SVG</button>
+        <button class="btn-ghost" id="downloadEpsBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Download EPS</button>
+        <button class="btn-ghost" id="vecCompareBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Compare</button>
+        <button class="btn-ghost" id="vecRemoveBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Remove</button>
+      </div>
+      <div class="hint" id="vecEpsHint">SVG keeps every path fully editable and opens cleanly in Adobe Illustrator. EPS is generated from the same paths (flat vector shapes, no rasterizing) for tools or marketplaces that specifically require .eps.</div>
+      <div class="status" id="vecStatus"></div>
+    </div>
+
+    <div class="card" id="vecQualityCard" style="display:none;">
+      <div class="card-title">Vector Quality Check</div>
+      <div class="settings-row-desc" style="margin-bottom:14px;">Scans the traced SVG for anchor-point bloat, stray "confetti" objects, duplicate paths, open paths that should be closed, and broken/degenerate path data — so you know if the result is clean before you download it.</div>
+
+      <div class="vec-quality-summary">
+        <div class="vec-quality-badge" id="vecQualityBadge">—</div>
+        <div class="vec-quality-stats" id="vecQualityStats"></div>
+      </div>
+
+      <div class="vec-quality-list" id="vecQualityList"></div>
+
+      <div class="vec-actions" style="margin-top:4px;">
+        <button class="btn-ghost" id="vecRecheckBtn" style="flex:0 0 auto;width:auto;padding:10px 16px;" disabled>Re-check</button>
+      </div>
+      <div class="status" id="vecQualityStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Color Segmentation</div>
+      <div class="settings-row-desc" style="margin-bottom:14px;">Detects the image's main colors and splits the traced result into a separate vector shape group per color — useful for multi-layer laser cutting, screen-print separations, or per-color editing in another tool.</div>
+
+      <div class="field">
+        <label>Minimum color size (%)</label>
+        <div class="slider-row">
+          <input type="range" id="vecColorMinPct" min="0" max="10" step="0.5" value="0.5">
+          <div class="slider-val" id="vecColorMinPctVal">0.5%</div>
+        </div>
+        <div class="hint">Colors covering less of the image than this are treated as noise/speckle, not a "main color".</div>
+      </div>
+
+      <div class="vec-actions">
+        <button id="vecSegmentBtn" disabled>Detect &amp; Segment Colors</button>
+        <button class="btn-ghost" id="vecDownloadLayersBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Download Color Layers (.zip)</button>
+      </div>
+
+      <div id="vecColorSwatches" class="vec-swatches" style="display:none;"></div>
+      <div class="status" id="vecSegmentStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Batch Vectorization</div>
+      <div class="settings-row-desc" style="margin-bottom:14px;">Upload several JPG/PNG files at once and convert them all to SVG (optionally EPS too) automatically, using the settings above. Each file is sent to the same VTracer backend one at a time.</div>
+
+      <div class="vec-dropzone" id="vecBatchDropzone">
+        <input type="file" id="vecBatchFileInput" accept="image/jpeg,image/png,image/jpg" multiple>
+        <div id="vecBatchDropzoneContent">
+          <div class="vec-drop-icon">🗂️</div>
+          <div class="vec-drop-title">Click to upload or drag & drop multiple images</div>
+          <div class="vec-drop-sub">JPG or PNG only — you can add more files any time before starting</div>
+        </div>
+      </div>
+
+      <div class="settings-row" style="margin-top:12px;">
+        <div>
+          <div class="settings-row-title">Also export EPS</div>
+          <div class="settings-row-desc">Generates a .eps file alongside the .svg for every image in the batch (one extra backend call per file, from the same traced paths — nothing is re-rasterized).</div>
+        </div>
+        <button type="button" id="vecBatchEpsToggle" class="toggle-switch" role="switch" aria-checked="false"></button>
+      </div>
+
+      <div class="batch-progress-bar" style="margin-top:14px;"><div class="batch-progress-bar-fill" id="vecBatchProgressFill"></div></div>
+      <div class="batch-summary" id="vecBatchSummary">No files added yet.</div>
+      <div id="vecBatchList" class="batch-list"></div>
+
+      <div class="vec-actions" style="margin-top:12px;">
+        <button id="vecBatchStartBtn" disabled>Vectorize All</button>
+        <button class="btn-ghost" id="vecBatchClearBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Clear Queue</button>
+        <button class="btn-ghost" id="vecBatchDownloadZipBtn" style="flex:0 0 auto;width:auto;padding:13px 18px;" disabled>Download All (.zip)</button>
+      </div>
+      <div class="status" id="vecBatchStatus"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="vec-compare-overlay" id="vecCompareOverlay">
+  <div class="vec-compare-modal" role="dialog" aria-modal="true" aria-label="Before and after comparison">
+    <div class="vec-compare-head">
+      <div>
+        <h3>Before / After</h3>
+        <div class="sub">Compare the original raster image against the vectorized SVG result.</div>
+      </div>
+      <button type="button" class="vec-compare-close" id="vecCompareCloseBtn" aria-label="Close">✕</button>
+    </div>
+
+    <div class="vec-compare-tabs" id="vecCompareTabs">
+      <div class="vec-compare-tab active" data-view="slider">Slider</div>
+      <div class="vec-compare-tab" data-view="side">Side by Side</div>
+    </div>
+
+    <div class="vec-compare-stage vec-checker-bg" id="vecCompareStage">
+      <img class="vec-cmp-after" id="vecCmpAfterImg" alt="Vectorized result">
+      <img class="vec-cmp-before" id="vecCmpBeforeImg" alt="Original image">
+      <div class="vec-cmp-divider" id="vecCmpDivider"></div>
+      <div class="vec-cmp-handle" id="vecCmpHandle">⇔</div>
+      <div class="vec-cmp-tag before">Before</div>
+      <div class="vec-cmp-tag after">After</div>
+    </div>
+
+    <div class="vec-compare-side-grid" id="vecCompareSideGrid" style="display:none;">
+      <div class="vec-compare-side-panel">
+        <div class="vec-compare-side-label">Before — Original</div>
+        <div class="vec-compare-side-box vec-checker-bg">
+          <img id="vecCmpSideBefore" alt="Original image">
+        </div>
+      </div>
+      <div class="vec-compare-side-panel">
+        <div class="vec-compare-side-label">After — Vectorized</div>
+        <div class="vec-compare-side-box vec-checker-bg">
+          <img id="vecCmpSideAfter" alt="Vectorized result">
+        </div>
+      </div>
+    </div>
+
+    <div class="vec-compare-hint" id="vecCompareHint">Drag the handle, or click anywhere on the image, to reveal more of the original.</div>
+  </div>
+</div>
+
+<script>
+let selectedStyle = "Line Art";
+let currentMode = "single"; // "single" | "batch" | "bulkprompt"
+let refImagesData = []; // [{mimeType, data, dataUrl}, ...]
+let bulkImagesData = []; // [{mimeType, data, dataUrl, name}, ...] — for Bulk Prompt Generator mode
+
+const GEMINI_MODEL = 'gemini-3.6-flash';
+// Groq's free tier — every model is free, gated only by rate limits (no credit card).
+// openai/gpt-oss-120b is Groq's current flagship free production model (text-only);
+// qwen/qwen3.6-27b is used automatically when reference images are attached since it's
+// Groq's current multimodal (vision) model with JSON mode support.
+// (llama-3.3-70b-versatile and llama-4-scout were deprecated by Groq on 2026-06-17 — do not use.)
+const GROQ_MODEL_TEXT = 'openai/gpt-oss-120b';
+const GROQ_MODEL_VISION = 'qwen/qwen3.6-27b';
+
+const generateBtn = document.getElementById('generateBtn');
+const singleThemeField = document.getElementById('singleThemeField');
+const batchThemeField = document.getElementById('batchThemeField');
+const bulkPromptField = document.getElementById('bulkPromptField');
+const refImageField = document.getElementById('refImageField');
+const gridSizeField = document.getElementById('gridSizeField');
+const styleField = document.getElementById('styleField');
+const gridPreviewCard = document.getElementById('gridPreviewCard');
+const batchCard = document.getElementById('batchCard');
+const outputCard = document.getElementById('outputCard');
+
+document.getElementById('modeTabs').addEventListener('click', (e)=>{
+  const tab = e.target.closest('.mode-tab');
+  if(!tab) return;
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  currentMode = tab.dataset.mode;
+  const isBatch = currentMode === 'batch';
+  const isBulkPrompt = currentMode === 'bulkprompt';
+  singleThemeField.style.display = (!isBatch && !isBulkPrompt) ? 'block' : 'none';
+  batchThemeField.style.display = isBatch ? 'block' : 'none';
+  bulkPromptField.style.display = isBulkPrompt ? 'block' : 'none';
+  // Theme/grid-only fields don't apply to the bulk recreation-prompt mode
+  refImageField.style.display = isBulkPrompt ? 'none' : 'block';
+  gridSizeField.style.display = isBulkPrompt ? 'none' : 'block';
+  styleField.style.display = isBulkPrompt ? 'none' : 'block';
+  strokeField.style.display = (isBulkPrompt || !(selectedStyle === 'Line Art' || selectedStyle === 'Outline Rounded')) ? 'none' : 'block';
+  gridPreviewCard.style.display = (!isBatch && !isBulkPrompt) ? 'block' : 'none';
+  batchCard.style.display = (isBatch || isBulkPrompt) ? 'block' : 'none';
+  outputCard.style.display = 'none';
+  clearStatus();
+  generateBtn.textContent = isBatch ? 'Run Batch Queue' : (isBulkPrompt ? 'Generate All Prompts' : 'Generate Master Prompt');
+});
+
+// ---- Reference image upload (multi) ----
+const refImageInput = document.getElementById('refImage');
+const refImagePreviewWrap = document.getElementById('refImagePreviewWrap');
+const refImagePreviewGrid = document.getElementById('refImagePreviewGrid');
+
+function renderRefImagePreviews(){
+  if(refImagesData.length === 0){
+    refImagePreviewWrap.style.display = 'none';
+    refImagePreviewGrid.innerHTML = '';
+    return;
+  }
+  refImagePreviewWrap.style.display = 'block';
+  refImagePreviewGrid.innerHTML = refImagesData.map((img, i) => `
+    <div style="position:relative;">
+      <img src="${img.dataUrl}" style="width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:block;">
+      <button type="button" class="ref-img-remove" data-idx="${i}" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;border:none;font-size:11px;line-height:1;cursor:pointer;">×</button>
+    </div>
+  `).join('');
+  refImagePreviewGrid.querySelectorAll('.ref-img-remove').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      refImagesData.splice(parseInt(btn.dataset.idx), 1);
+      renderRefImagePreviews();
+    });
+  });
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+refImageInput.addEventListener('change', async ()=>{
+  const files = Array.from(refImageInput.files || []);
+  if(files.length === 0) return;
+  for(const file of files){
+    try{
+      const dataUrl = await readFileAsDataUrl(file);
+      const match = /^data:(.+?);base64,(.*)$/.exec(dataUrl);
+      if(!match) continue;
+      refImagesData.push({ mimeType: match[1], data: match[2], dataUrl, name: file.name });
+    }catch(e){ /* skip failed file */ }
+  }
+  refImageInput.value = '';
+  renderRefImagePreviews();
+});
+
+document.getElementById('removeImageBtn').addEventListener('click', ()=>{
+  refImagesData = [];
+  refImageInput.value = '';
+  renderRefImagePreviews();
+});
+
+// ---- Bulk image upload (Bulk Prompt Generator mode) ----
+const bulkImageInput = document.getElementById('bulkImageInput');
+const bulkImagePreviewWrap = document.getElementById('bulkImagePreviewWrap');
+const bulkImagePreviewGrid = document.getElementById('bulkImagePreviewGrid');
+
+function renderBulkImagePreviews(){
+  if(bulkImagesData.length === 0){
+    bulkImagePreviewWrap.style.display = 'none';
+    bulkImagePreviewGrid.innerHTML = '';
+    return;
+  }
+  bulkImagePreviewWrap.style.display = 'block';
+  bulkImagePreviewGrid.innerHTML = bulkImagesData.map((img, i) => `
+    <div style="position:relative;">
+      <img src="${img.dataUrl}" style="width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:block;">
+      <button type="button" class="bulk-img-remove" data-idx="${i}" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;border:none;font-size:11px;line-height:1;cursor:pointer;">×</button>
+    </div>
+  `).join('');
+  bulkImagePreviewGrid.querySelectorAll('.bulk-img-remove').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      bulkImagesData.splice(parseInt(btn.dataset.idx), 1);
+      renderBulkImagePreviews();
+    });
+  });
+}
+
+bulkImageInput.addEventListener('change', async ()=>{
+  const files = Array.from(bulkImageInput.files || []);
+  if(files.length === 0) return;
+  for(const file of files){
+    try{
+      const dataUrl = await readFileAsDataUrl(file);
+      const match = /^data:(.+?);base64,(.*)$/.exec(dataUrl);
+      if(!match) continue;
+      bulkImagesData.push({ mimeType: match[1], data: match[2], dataUrl, name: file.name });
+    }catch(e){ /* skip failed file */ }
+  }
+  bulkImageInput.value = '';
+  renderBulkImagePreviews();
+});
+
+document.getElementById('bulkRemoveImagesBtn').addEventListener('click', ()=>{
+  bulkImagesData = [];
+  bulkImageInput.value = '';
+  renderBulkImagePreviews();
+});
+
+const cols = document.getElementById('cols');
+const rows = document.getElementById('rows');
+const cellGrid = document.getElementById('cellGrid');
+const strokeField = document.getElementById('strokeField');
+const strokeWidth = document.getElementById('strokeWidth');
+const strokeVal = document.getElementById('strokeVal');
+
+function renderGrid(labels){
+  const c = Math.max(1, Math.min(6, parseInt(cols.value)||1));
+  const r = Math.max(1, Math.min(6, parseInt(rows.value)||1));
+  cellGrid.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+  cellGrid.innerHTML = '';
+  let idx = 0;
+  for(let ri=0; ri<r; ri++){
+    for(let ci=0; ci<c; ci++){
+      idx++;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const coordLetter = String.fromCharCode(65+ri);
+      const label = labels && labels[idx-1] ? labels[idx-1] : '';
+      if(label) cell.classList.add('filled');
+      cell.innerHTML = `<div class="coord">${coordLetter}${ci+1}</div>${label ? `<div class="label">${label}</div>` : ''}`;
+      cellGrid.appendChild(cell);
+    }
+  }
+}
+renderGrid();
+cols.addEventListener('input', ()=>renderGrid());
+rows.addEventListener('input', ()=>renderGrid());
+
+strokeWidth.addEventListener('input', ()=>{
+  strokeVal.textContent = strokeWidth.value + 'px';
+});
+
+document.getElementById('stylePills').addEventListener('click', (e)=>{
+  const pill = e.target.closest('.pill');
+  if(!pill) return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+  selectedStyle = pill.dataset.style;
+  strokeField.style.display = (selectedStyle === 'Line Art' || selectedStyle === 'Outline Rounded') ? 'block' : 'none';
+});
+
+// ---- API key manager (multi-provider) ----
+let currentProvider = 'gemini'; // 'gemini' | 'groq'
+const keyStores = {
+  gemini: { storageKey: 'grid-forge:gemini-keys', keys: [] },
+  groq:   { storageKey: 'grid-forge:groq-keys',   keys: [] }
+};
+let apiKeys = keyStores.gemini.keys; // active reference, swapped on provider change
+
+function maskKey(k){
+  if(k.length <= 8) return '••••' + k.slice(-4);
+  return k.slice(0,4) + '••••••••' + k.slice(-4);
+}
+
+async function loadKeys(){
+  for(const p of Object.keys(keyStores)){
+    try{
+      const raw = localStorage.getItem(keyStores[p].storageKey);
+      if(raw){
+        const arr = JSON.parse(raw);
+        keyStores[p].keys = arr.map(k => typeof k === 'string'
+          ? {key:k, exhausted:false, active:true}
+          : {key:k.key, exhausted:false, active: k.active !== false});
+      }
+    }catch(e){
+      keyStores[p].keys = [];
+    }
+  }
+  apiKeys = keyStores[currentProvider].keys;
+  renderKeyList();
+}
+
+async function saveKeys(){
+  try{
+    localStorage.setItem(keyStores[currentProvider].storageKey, JSON.stringify(apiKeys.map(k=>({key:k.key, active:k.active !== false}))));
+  }catch(e){
+    console.error('key save failed', e);
+  }
+}
+
+// ---- Rate limiting (per provider, per key) to avoid burning free-tier quota ----
+const rpmLimits = { gemini: 10, groq: 25 }; // conservative safe defaults, user-adjustable
+const requestLog = { gemini: {}, groq: {} }; // { [key]: [timestamp, ...] }
+
+const rpmLimitInput = document.getElementById('rpmLimitInput');
+rpmLimitInput.addEventListener('change', ()=>{
+  const v = Math.max(1, Math.min(120, parseInt(rpmLimitInput.value) || 10));
+  rpmLimitInput.value = v;
+  rpmLimits[currentProvider] = v;
+});
+
+function purgeRequestLog(provider, keyStr){
+  const log = requestLog[provider][keyStr];
+  if(!log) return [];
+  const now = Date.now();
+  while(log.length && now - log[0] >= 60000) log.shift();
+  return log;
+}
+
+// ms to wait before this key has room for one more request; 0 = usable right now.
+function msUntilRpmRoom(provider, keyStr){
+  const limit = rpmLimits[provider] || 10;
+  const log = purgeRequestLog(provider, keyStr);
+  if(log.length < limit) return 0;
+  return Math.max(0, 60000 - (Date.now() - log[0]) + 200);
+}
+
+function reserveRpm(provider, keyStr){
+  if(!requestLog[provider][keyStr]) requestLog[provider][keyStr] = [];
+  requestLog[provider][keyStr].push(Date.now());
+}
+
+// ---- Token-per-minute (TPM) tracking (per provider, per key) ----
+// Groq's free vision tier especially has a low, strict TPM cap (e.g. 8000) —
+// this estimates each request's token cost up front and keeps every key's
+// rolling 60s usage under its configured budget.
+const tpmLimits = { gemini: 1000000, groq: 8000 }; // conservative safe defaults, user-adjustable
+const tokenLog = { gemini: {}, groq: {} }; // { [key]: [{ts, tokens}, ...] }
+
+const tpmLimitInput = document.getElementById('tpmLimitInput');
+tpmLimitInput.addEventListener('change', ()=>{
+  const v = Math.max(500, Math.min(2000000, parseInt(tpmLimitInput.value) || 8000));
+  tpmLimitInput.value = v;
+  tpmLimits[currentProvider] = v;
+});
+
+// Rough token estimate for a request: ~4 chars/token for text, a flat per-image
+// cost for vision calls, plus headroom for the JSON response we expect back.
+function estimateRequestTokens(promptText, imagesData){
+  const textTokens = Math.ceil((promptText || '').length / 4);
+  const imageTokens = (imagesData || []).length * 1600;
+  const outputTokens = 700;
+  return textTokens + imageTokens + outputTokens;
+}
+
+function purgeTokenLog(provider, keyStr){
+  const log = tokenLog[provider][keyStr];
+  if(!log) return [];
+  const now = Date.now();
+  while(log.length && now - log[0].ts >= 60000) log.shift();
+  return log;
+}
+
+function getTpmUsed(provider, keyStr){
+  return purgeTokenLog(provider, keyStr).reduce((sum, e) => sum + e.tokens, 0);
+}
+
+// ms to wait before this key has room for `needed` more tokens; 0 = usable right now.
+function msUntilTpmRoom(provider, keyStr, needed){
+  const limit = tpmLimits[provider] || 8000;
+  const log = purgeTokenLog(provider, keyStr);
+  const used = log.reduce((sum, e) => sum + e.tokens, 0);
+  if(used + needed <= limit || log.length === 0) return 0;
+  return Math.max(0, 60000 - (Date.now() - log[0].ts) + 200);
+}
+
+// Optimistically logs a request's estimated token cost against this key's TPM budget.
+function reserveTpm(provider, keyStr, tokens){
+  if(!tokenLog[provider][keyStr]) tokenLog[provider][keyStr] = [];
+  tokenLog[provider][keyStr].push({ ts: Date.now(), tokens });
+}
+
+// Reserves both RPM + TPM budget for a request in one call.
+function reserveUsage(provider, keyStr, tokens){
+  reserveRpm(provider, keyStr);
+  reserveTpm(provider, keyStr, tokens);
+}
+
+// ---- Combined cooldown (RPM + TPM + hard "exhausted" 429/403 flag) ----
+// This is what powers the live countdown shown per key in the key list — how
+// many more seconds until this key is usable again, based on what we've
+// actually sent it in the last rolling 60s window. This is our own local
+// estimate, not a value the provider reports, so it can be slightly off if the
+// account is also being rate-limited by a longer (e.g. daily) quota window.
+function getKeyCooldownMs(provider, keyStr, estTokens){
+  return Math.max(
+    msUntilRpmRoom(provider, keyStr),
+    msUntilTpmRoom(provider, keyStr, estTokens || 0)
+  );
+}
+
+
+let batchParallelMode = true;
+let autoRetryMode = true;
+
+function wireToggle(id, onChange){
+  const btn = document.getElementById(id);
+  btn.addEventListener('click', ()=>{
+    const nowOn = !btn.classList.contains('on');
+    btn.classList.toggle('on', nowOn);
+    btn.setAttribute('aria-checked', String(nowOn));
+    onChange(nowOn);
+  });
+}
+wireToggle('batchParallelToggle', (on)=>{ batchParallelMode = on; });
+wireToggle('autoRetryToggle', (on)=>{ autoRetryMode = on; });
+
+function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+// Waits, if needed, so this specific key doesn't exceed the configured RPM for its provider.
+// Recursively rechecks after waiting in case other calls slipped in during the wait.
+async function waitForRateLimit(provider, keyStr, onWait){
+  const limit = rpmLimits[provider] || 10;
+  if(!requestLog[provider][keyStr]) requestLog[provider][keyStr] = [];
+  const log = requestLog[provider][keyStr];
+  const now = Date.now();
+  while(log.length && now - log[0] >= 60000) log.shift();
+  if(log.length >= limit){
+    const waitMs = Math.max(250, 60000 - (now - log[0]) + 200);
+    if(onWait) onWait(Math.ceil(waitMs/1000));
+    await sleep(waitMs);
+    return waitForRateLimit(provider, keyStr, onWait);
+  }
+  log.push(Date.now());
+}
+
+const providerLabels = {
+  gemini: { placeholder: 'Paste a new Gemini API key', hint: 'Get a free Gemini key from Google AI Studio and use it.', note: `If you add multiple keys (from different Google accounts), the tool will automatically try the next key when the free tier quota runs out. Keys are saved in your browser — only you can see them. Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.` },
+  groq:   { placeholder: 'Paste a new Groq API key (gsk_...)', hint: `Groq is fully usable on the free tier — free model: <b>${GROQ_MODEL_TEXT}</b> (<b>${GROQ_MODEL_VISION}</b> when a reference image is attached). No credit card needed, only rate limits apply.`, note: `If you add multiple keys, the tool will try the next key when one hits its rate limit. Keys are saved in your browser. Get a key from <a href="https://console.groq.com/keys" target="_blank">Groq Console</a>.` }
+};
+
+function applyProviderUI(){
+  document.getElementById('apiKeyInput').placeholder = providerLabels[currentProvider].placeholder;
+  document.getElementById('providerHint').innerHTML = providerLabels[currentProvider].hint;
+  document.getElementById('keyNote').innerHTML = providerLabels[currentProvider].note;
+  rpmLimitInput.value = rpmLimits[currentProvider];
+  tpmLimitInput.value = tpmLimits[currentProvider];
+}
+
+document.getElementById('providerTabs').addEventListener('click', (e)=>{
+  const tab = e.target.closest('.mode-tab');
+  if(!tab) return;
+  document.querySelectorAll('#providerTabs .mode-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  currentProvider = tab.dataset.provider;
+  apiKeys = keyStores[currentProvider].keys;
+  applyProviderUI();
+  renderKeyList();
+  clearStatus();
+});
+
+const keyListExpanded = { gemini:false, groq:false };
+const COLLAPSE_LIMIT = 3;
+const DOT_COLORS = ['#B98CFF','#3CCB7F','#FF7FB0','#FFA24E','#7C9CFF','#4ED3D0'];
+
+function providerGroupLabel(p){
+  return p === 'groq' ? 'Groq' : 'Gemini';
+}
+
+function renderKeyList(){
+  const listEl = document.getElementById('keyList');
+  const total = apiKeys.length;
+
+  if(total === 0){
+    listEl.innerHTML = `
+      <div class="key-group-header">
+        <span class="key-group-title">${providerGroupLabel(currentProvider).toUpperCase()} KEYS (0)</span>
+      </div>
+      <div class="key-empty">No keys added yet</div>`;
+    return;
+  }
+
+  const expanded = keyListExpanded[currentProvider];
+  const visibleCount = expanded ? total : Math.min(COLLAPSE_LIMIT, total);
+  const activeCount = apiKeys.filter(k=>k.active !== false).length;
+
+  const rowsHtml = apiKeys.slice(0, visibleCount).map((k, i) => {
+    const isActive = k.active !== false;
+    const dotColor = DOT_COLORS[i % DOT_COLORS.length];
+    let validBadge = '<span class="key-valid-badge pending">— not verified</span>';
+    if(k.checkResult){
+      validBadge = k.checkResult.ok
+        ? '<span class="key-valid-badge">✓ Valid</span>'
+        : `<span class="key-valid-badge invalid">✕ Invalid</span>`;
+    }
+    return `
+    <div class="key-item ${k.exhausted ? 'exhausted' : ''} ${!isActive ? 'deactivated' : ''}">
+      <div class="key-left">
+        <span class="key-dot" style="background:${k.exhausted ? 'var(--danger)' : dotColor}"></span>
+        <span class="key-masked">#${i+1} ${maskKey(k.key)}</span>
+      </div>
+      <div class="key-status-pill">
+        <span class="key-cooldown" data-provider="${currentProvider}" data-key="${k.key.replace(/"/g,'&quot;')}"></span>
+        <span class="key-active-badge">${k.exhausted ? 'Quota exhausted' : (isActive ? 'Active' : 'Off')}</span>
+        <button type="button" class="key-mini-toggle ${isActive ? 'on' : ''}" data-idx="${i}" data-action="toggle-active" title="Active/Off"></button>
+        ${validBadge}
+        <button class="key-remove" data-idx="${i}" data-action="remove" title="Remove">×</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  listEl.innerHTML = `
+    <div class="key-group-header">
+      <span class="key-group-title">${providerGroupLabel(currentProvider).toUpperCase()} KEYS (${total})</span>
+      <div class="key-group-actions">
+        <button type="button" class="key-bulk-btn on-btn" data-bulk="on">All ON</button>
+        <button type="button" class="key-bulk-btn off-btn" data-bulk="off">All OFF</button>
+        <button type="button" class="key-bulk-btn check-btn" id="checkAllKeysBtn">Check all</button>
+      </div>
+    </div>
+    <div class="hint" style="margin:-2px 0 10px;">${activeCount}/${total} active</div>
+    ${rowsHtml}
+    ${total > COLLAPSE_LIMIT ? `<button type="button" class="key-view-all" id="toggleExpandBtn">${expanded ? 'Show less ▴' : `View all ${providerGroupLabel(currentProvider)} keys (${total}) ▾`}</button>` : ''}
+  `;
+
+  listEl.querySelectorAll('[data-action="remove"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      apiKeys.splice(parseInt(btn.dataset.idx), 1);
+      saveKeys();
+      renderKeyList();
+    });
+  });
+  listEl.querySelectorAll('[data-action="toggle-active"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.idx);
+      apiKeys[idx].active = !(apiKeys[idx].active !== false);
+      saveKeys();
+      renderKeyList();
+    });
+  });
+  const expandBtn = document.getElementById('toggleExpandBtn');
+  if(expandBtn){
+    expandBtn.addEventListener('click', ()=>{
+      keyListExpanded[currentProvider] = !keyListExpanded[currentProvider];
+      renderKeyList();
+    });
+  }
+  listEl.querySelectorAll('[data-bulk]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const on = btn.dataset.bulk === 'on';
+      apiKeys.forEach(k => { k.active = on; });
+      saveKeys();
+      renderKeyList();
+    });
+  });
+  const checkAllBtn = document.getElementById('checkAllKeysBtn');
+  if(checkAllBtn){
+    checkAllBtn.addEventListener('click', checkAllKeys);
+  }
+  tickKeyCooldowns();
+}
+
+// Live countdown ticker — runs every second, updates each key's "⏳ Xs" badge
+// from the RPM/TPM logs without re-rendering the whole list (keeps toggles/
+// scroll position stable). Also auto-clears a 429 "quota exhausted" flag once our
+// local window shows that key should have room again, so the badge flips back
+// to Active on its own instead of staying stuck until the next Generate press.
+function tickKeyCooldowns(){
+  let anyAutoRecovered = false;
+  document.querySelectorAll('.key-cooldown').forEach(span => {
+    const provider = span.dataset.provider;
+    const keyStr = span.dataset.key;
+    const waitMs = getKeyCooldownMs(provider, keyStr, 0);
+    if(waitMs > 0){
+      span.textContent = `⏳ ${Math.ceil(waitMs/1000)}s`;
+      span.classList.add('show');
+    } else {
+      span.classList.remove('show');
+      const keyObj = (keyStores[provider].keys || []).find(k => k.key === keyStr);
+      if(keyObj && keyObj.exhausted){
+        keyObj.exhausted = false;
+        anyAutoRecovered = true;
+      }
+    }
+  });
+  if(anyAutoRecovered) renderKeyList();
+}
+setInterval(tickKeyCooldowns, 1000);
+
+// One-click: test every key for the current provider in parallel, mark ✓ Valid / ✕ Invalid
+async function checkAllKeys(){
+  if(apiKeys.length === 0) return;
+  const btn = document.getElementById('checkAllKeysBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Checking...'; }
+  setStatus(`Checking ${apiKeys.length} ${providerGroupLabel(currentProvider)} key(s)...`);
+
+  await Promise.all(apiKeys.map(async (k) => {
+    try{
+      k.checkResult = await testKey(k.key);
+    }catch(e){
+      k.checkResult = {ok:false, message:e.message || 'error'};
+    }
+  }));
+
+  renderKeyList();
+  const okCount = apiKeys.filter(k=>k.checkResult && k.checkResult.ok).length;
+  setStatus(`Check complete — ${okCount}/${apiKeys.length} key(s) OK`, okCount < apiKeys.length);
+  setTimeout(clearStatus, 3500);
+}
+
+document.getElementById('addKeyBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('apiKeyInput');
+  const val = input.value.trim();
+  if(!val) return;
+  if(apiKeys.some(k=>k.key === val)){ input.value=''; return; }
+  apiKeys.push({key:val, exhausted:false, active:true});
+  input.value = '';
+  saveKeys();
+  renderKeyList();
+});
+document.getElementById('apiKeyInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') document.getElementById('addKeyBtn').click();
+});
+applyProviderUI();
+loadKeys();
+
+const statusEl = document.getElementById('status');
+function setStatus(msg, isError){
+  statusEl.classList.add('show');
+  statusEl.classList.toggle('error', !!isError);
+  statusEl.innerHTML = isError ? msg : `<span class="dot-loader"><span></span><span></span><span></span></span>${msg}`;
+}
+function clearStatus(){
+  statusEl.classList.remove('show','error');
+  statusEl.innerHTML = '';
+}
+
+// Shared generation settings so Gemini and Groq answer the exact same brief
+// the exact same way (same temperature, both forced into strict JSON mode) —
+// this is what keeps results consistent across providers/keys.
+const SHARED_GEN_TEMPERATURE = 0.85;
+
+async function callGemini(apiKey, prompt, imagesData, signal){
+  const parts = [{text: prompt}];
+  if(imagesData && imagesData.length){
+    imagesData.forEach(img => {
+      parts.push({ inlineData: { mimeType: img.mimeType, data: img.data } });
+    });
+  }
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    signal,
+    body: JSON.stringify({
+      contents: [{ role:'user', parts }],
+      generationConfig: {
+        temperature: SHARED_GEN_TEMPERATURE,
+        responseMimeType: 'application/json'
+      }
+    })
+  });
+  if(!resp.ok){
+    const errText = await resp.text();
+    const err = new Error(`API error (${resp.status}): ${errText.slice(0,200)}`);
+    err.status = resp.status;
+    throw err;
+  }
+  return resp.json();
+}
+
+async function callGroq(apiKey, prompt, imagesData, signal){
+  const hasImages = imagesData && imagesData.length;
+  const model = hasImages ? GROQ_MODEL_VISION : GROQ_MODEL_TEXT;
+  let content;
+  if(hasImages){
+    content = [{ type:'text', text: prompt }];
+    imagesData.forEach(img => {
+      content.push({ type:'image_url', image_url: { url: `data:${img.mimeType};base64,${img.data}` } });
+    });
+  } else {
+    content = prompt;
+  }
+  const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    signal,
+    body: JSON.stringify({
+      model,
+      messages: [{ role:'user', content }],
+      temperature: SHARED_GEN_TEMPERATURE,
+      response_format: { type: 'json_object' }
+    })
+  });
+  if(!resp.ok){
+    const errText = await resp.text();
+    const err = new Error(`API error (${resp.status}): ${errText.slice(0,200)}`);
+    err.status = resp.status;
+    throw err;
+  }
+  return resp.json();
+}
+
+// Provider-agnostic dispatcher — returns raw provider response
+async function callModel(apiKey, prompt, imagesData){
+  return currentProvider === 'groq'
+    ? callGroq(apiKey, prompt, imagesData)
+    : callGemini(apiKey, prompt, imagesData);
+}
+
+// Pulls the generated text out of either provider's response shape
+function extractModelText(data){
+  if(currentProvider === 'groq'){
+    return data?.choices?.[0]?.message?.content || '';
+  }
+  return data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('') || '';
+}
+
+// Lightweight key validation — sends a tiny prompt to confirm the key works
+async function testKey(apiKey){
+  if(currentProvider === 'groq'){
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${apiKey}`},
+      body: JSON.stringify({
+        model: GROQ_MODEL_TEXT,
+        messages: [{role:'user', content:'ping'}],
+        max_tokens: 5
+      })
+    });
+    if(resp.ok) return {ok:true};
+    const errText = await resp.text();
+    return {ok:false, status:resp.status, message: errText.slice(0,150)};
+  }
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents: [{ role:'user', parts:[{text:'ping'}] }],
+      generationConfig: { maxOutputTokens: 5 }
+    })
+  });
+  if(resp.ok) return {ok:true};
+  const errText = await resp.text();
+  return {ok:false, status:resp.status, message: errText.slice(0,150)};
+}
+
+function resetKeyExhaustion(){
+  apiKeys.forEach(k => k.exhausted = false);
+  renderKeyList();
+}
+
+// Resets exhaustion on BOTH providers' key lists — used before a race so no
+// stale "exhausted" flag from an earlier attempt blocks a fresh try.
+function resetAllKeyExhaustion(){
+  Object.keys(keyStores).forEach(p => keyStores[p].keys.forEach(k => k.exhausted = false));
+  renderKeyList();
+}
+
+// Flat list of every currently-usable key across both providers, e.g.
+// [{provider:'gemini', key:'...', idx:0}, {provider:'groq', key:'...', idx:1}, ...]
+function getAllActiveKeyEntries(){
+  const entries = [];
+  Object.keys(keyStores).forEach(provider=>{
+    keyStores[provider].keys.forEach((k, idx)=>{
+      if(k.active !== false && !k.exhausted) entries.push({ provider, key:k.key, idx, keyObj:k });
+    });
+  });
+  return entries;
+}
+
+function buildSystemInstruction(name, imageCount){
+  const c = Math.max(1, Math.min(6, parseInt(cols.value)||1));
+  const r = Math.max(1, Math.min(6, parseInt(rows.value)||1));
+  const total = c*r;
+  const stroke = strokeWidth.value;
+  const notes = document.getElementById('extraNotes').value.trim();
+  const hasImages = imageCount > 0;
+  const imageWord = imageCount === 1 ? 'A reference image is' : `${imageCount} reference images are`;
+  const imageWordShort = imageCount === 1 ? 'the attached reference image' : 'the attached reference images collectively';
+
+  const strokeLine = (selectedStyle === 'Line Art' || selectedStyle === 'Outline Rounded')
+    ? `Stroke width for all line work must be exactly ${stroke}px, kept perfectly consistent across every icon.`
+    : `No visible outline stroke; render as ${selectedStyle.toLowerCase()} shapes.`;
+
+  const forcedStyleRules = `MANDATORY design rules that must apply to every single icon in the grid, with zero exceptions:
+- Minimalist and simple — reduce each icon to its most essential shape only, avoid extra detail, ornamentation, or fine linework; the concept should be instantly readable at small size with the fewest possible visual elements. Do not over-detail any icon (e.g. no fine typography, no tiny embedded numbers/text, no intricate ornament) — keep every shape reduced to its simplest recognizable form.
+- Negative space design — use negative space cleverly as part of the icon concept wherever possible, and to further simplify shapes.
+- Flat icon style, symbolic representation of each concept (not literal/detailed illustration).
+- Monochrome palette — the entire image must be strictly black and white only, no color, no grayscale gradients.
+- Flat solid colors only — pure black and pure white fills, absolutely NO gradients, NO shadows, NO blur, NO glow effects.
+- Bold, clean shapes with minimal anchor points and hard, crisp edges (no soft/rounded noise, no hand-drawn wobble).
+- Pure graphic art / vector style.
+- NO photorealism, NO backgrounds, NO textures, NO patterns, NO 3D shading of any kind — flat 2D only.
+- Uniform plain background (solid white or transparent) behind every icon, identical across the whole grid.
+- Icons are separated purely by even empty spacing/margins — there must be NO visible grid lines, NO divider lines, NO borders, NO table/cell outlines, NO ruled lines of any kind between or around the icons. The grid layout is achieved only through consistent alignment and spacing, never through drawn lines, boxes, or frames.
+- Every icon in the grid must be 100% unique from every other icon in this same grid — no two cells may repeat the same sub-concept or look alike.
+- If reference image(s) are provided, treat them only as loose stylistic/thematic inspiration, not a template to copy — do not replicate their exact fine details (such as specific number typography, digit placement, or ornamental marks) one-to-one. Roughly 70% resemblance in overall theme and mood to the reference is enough; exact replication is not the goal, and simplifying or reinterpreting details to keep the minimalist rule above takes priority over matching the reference precisely.`;
+
+  const conceptLine = name
+    ? `Concept name: "${name}"`
+    : `No concept name was given in text — derive the theme and concept purely from ${hasImages ? (imageCount === 1 ? 'the attached reference image' : 'the attached reference images') : 'the attached reference material'} (its subject matter, mood, and visual motifs).`;
+
+  const imageLine = hasImages
+    ? (name
+        ? `${imageWord} attached. Use ${imageWordShort} as the primary guide for visual style, mood, and linework character (while still keeping the mandatory monochrome/flat rules above), and combine it with the concept name below to pick sub-concepts.`
+        : `${imageWord} attached. Study ${imageWordShort} closely and use them as the sole source for both the overall theme and the visual style reference (subject to the mandatory monochrome/flat rules above).`)
+    : '';
+
+  return `You are an expert prompt engineer for AI image generators (Midjourney, Stable Diffusion, DALL-E) who specializes in icon set design for graphic designers.
+
+Given a concept name and/or a reference image, and a grid size, write ONE single "master prompt" that instructs an image generator to produce ONE image containing a ${c}-column by ${r}-row grid (${total} cells total) of icons, all orbiting the same theme, but each cell showing a distinct, unique sub-concept so no two icons repeat or look alike. All icons must share identical visual style, weight, line quality, composition scale, and framing so the set reads as one cohesive family.
+
+${forcedStyleRules}
+
+User-selected style tag (must be interpreted within the mandatory rules above, never contradicting them): ${selectedStyle}. ${strokeLine}
+${notes ? `Additional creative direction: ${notes}.` : ''}
+${imageLine}
+
+Respond with STRICT JSON only, no markdown fences, no commentary, in this exact shape:
+{"masterPrompt": "the full single prompt text, ready to paste into an image generator", "concepts": [{"row":1,"col":1,"label":"short 2-4 word label of that cell's sub-concept"}, ... exactly ${total} entries covering every row 1..${r} and col 1..${c}]}
+
+The masterPrompt must explicitly state the grid layout (${c}x${r}, ${total} icons) as a spacing/alignment arrangement only, list the ${total} distinct sub-concepts inline so the image model knows what goes in each cell, restate all the mandatory design rules above in clear language (including the explicit instruction that no grid lines, dividers, borders, or cell outlines should appear anywhere in the image, that every icon must be minimalist with minimal detail, that all ${total} icons must be 100% unique from one another, and that any reference image is loose inspiration only — about 70% thematic resemblance is enough, exact detail-for-detail copying is not required or wanted), describe the shared composition/framing, and end with quality/consistency directives reinforcing strict black-and-white monochrome, flat, minimalist, negative-space, symbolic icon style with clean empty space between icons instead of drawn lines. Write labels and the masterPrompt in English, but if the concept name given is in Bengali, keep the theme meaning faithful.
+
+${conceptLine}`;
+}
+
+// System instruction for Bulk Prompt Generator mode — reverse-engineers ONE
+// uploaded image into an accurate recreation prompt for a clean flat vector/logo/icon.
+function buildRecreationPromptInstruction(){
+  const notes = document.getElementById('extraNotes').value.trim();
+  return `You are an expert prompt engineer for AI image generators (Midjourney, Stable Diffusion, DALL-E) who specializes in reverse-engineering existing designs into precise text prompts.
+
+Look closely at the attached image and write ONE accurate prompt that, if pasted into an image generator, would recreate this exact design as a clean, professional flat vector / logo / icon graphic.
+
+Carefully observe and describe in the prompt:
+- The exact subject matter and composition (what is depicted, and how the elements are arranged).
+- The precise color palette used (name the actual colors/hex-approximate tones you see, not generic terms).
+- The visual style (flat icon, line art, solid glyph, duotone, geometric, mascot/character logo, emblem, etc. — pick the one that matches what's actually in the image).
+- Shape language and level of detail (geometric vs organic, sharp vs rounded corners, simple vs intricate).
+- Composition framing (centered, full-bleed, padding/margins, background treatment — transparent/solid/gradient).
+
+The recreation prompt must steer the output to be clean, crisp, professional vector/logo/icon artwork (not a photo, not a mockup, not 3D render) — flat colors, hard clean edges, no photographic texture, no noise, suitable for a stock icon/logo marketplace, while staying faithful to what is actually in the source image.
+${notes ? `Additional creative direction to fold in: ${notes}.` : ''}
+
+Respond with STRICT JSON only, no markdown fences, no commentary, in this exact shape:
+{"recreationPrompt": "the full single prompt text, ready to paste into an image generator to recreate this design as a clean flat vector/logo/icon", "detectedStyle": "short 2-4 word label of the style you identified (e.g. 'flat mascot logo', 'line art icon')"}`;
+}
+
+// Fires ONE attempt on ONE key entry for Bulk Prompt Generator mode — parses
+// its response into {recreationPrompt, detectedStyle}. Mirrors attemptKeyEntry
+// but expects the recreation-prompt JSON shape instead of masterPrompt/concepts.
+async function attemptRecreationKeyEntry(entry, systemInstruction, imagesData, signal){
+  try{
+    const data = entry.provider === 'groq'
+      ? await callGroq(entry.key, systemInstruction, imagesData, signal)
+      : await callGemini(entry.key, systemInstruction, imagesData, signal);
+    const textOut = entry.provider === 'groq'
+      ? (data?.choices?.[0]?.message?.content || '')
+      : (data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('') || '');
+    const cleaned = textOut.replace(/```json|```/g,'').trim();
+    let parsed;
+    try{ parsed = JSON.parse(cleaned); }
+    catch(e){ throw new Error('Could not parse the model response'); }
+    if(!parsed.recreationPrompt) throw new Error('Recreation prompt not found');
+    return { parsed, entry };
+  }catch(err){
+    if(err.status === 429 || err.status === 403) entry.keyObj.exhausted = true;
+    err.entry = entry;
+    throw err;
+  }
+}
+
+// Core generation call for Bulk Prompt Generator mode — analyzes ONE image and
+// returns its recreation prompt. Races every active key across both providers,
+// same pattern as generateOne, wrapped so the shape matches {masterPrompt, concepts}
+// so it can be dropped straight into the existing batch-queue UI/export code.
+async function generateRecreationPrompt(imageEntry, onKeyAttempt){
+  const systemInstruction = buildRecreationPromptInstruction();
+  const imagesData = [imageEntry];
+  const estTokens = estimateRequestTokens(systemInstruction, imagesData);
+
+  const maxPasses = autoRetryMode ? 3 : 1;
+  let winner = null;
+  let lastErrMsg = '';
+
+  for(let pass=0; pass<maxPasses && !winner; pass++){
+    const rawEntries = getAllActiveKeyEntries();
+    if(rawEntries.length === 0) break;
+    if(pass > 0){
+      setStatus(`Auto Retry: trying again with all keys at once (pass ${pass+1})...`);
+      await sleep(1200);
+    }
+
+    let entries = rawEntries.filter(e => getKeyCooldownMs(e.provider, e.key, estTokens) === 0);
+    while(entries.length === 0 && rawEntries.length > 0){
+      const waitMs = Math.min(...rawEntries.map(e => getKeyCooldownMs(e.provider, e.key, estTokens)));
+      setStatus(`Waiting ~${Math.ceil(waitMs/1000)}s to avoid the rate/TPM limit...`);
+      await sleep(waitMs);
+      entries = rawEntries.filter(e => getKeyCooldownMs(e.provider, e.key, estTokens) === 0);
+    }
+
+    entries.forEach(e => reserveUsage(e.provider, e.key, estTokens));
+    if(onKeyAttempt) onKeyAttempt(entries);
+
+    const controllers = entries.map(()=> new AbortController());
+    const attempts = entries.map((entry, i) => attemptRecreationKeyEntry(entry, systemInstruction, imagesData, controllers[i].signal));
+
+    try{
+      winner = await Promise.any(attempts);
+    }catch(aggErr){
+      const msgs = (aggErr.errors || []).map(e => `${providerGroupLabel(e.entry.provider)} #${e.entry.idx+1}: ${e.message}`);
+      lastErrMsg = msgs.join(' | ');
+    }finally{
+      controllers.forEach((ctrl, i) => { if(!winner || entries[i] !== winner.entry) ctrl.abort(); });
+      renderKeyList();
+    }
+  }
+
+  if(!winner){
+    throw new Error(lastErrMsg || 'Tried all keys/APIs at once, none of them worked.');
+  }
+
+  return {
+    masterPrompt: winner.parsed.recreationPrompt,
+    concepts: [],
+    usedProvider: winner.entry.provider,
+    usedKeyIdx: winner.entry.idx
+  };
+}
+
+// Fires ONE attempt on ONE key entry, parses its response into {masterPrompt, concepts}.
+// Throws (with entry attached) on any failure so Promise.any can skip past it.
+async function attemptKeyEntry(entry, systemInstruction, imagesData, signal){
+  try{
+    const data = entry.provider === 'groq'
+      ? await callGroq(entry.key, systemInstruction, imagesData, signal)
+      : await callGemini(entry.key, systemInstruction, imagesData, signal);
+    const textOut = entry.provider === 'groq'
+      ? (data?.choices?.[0]?.message?.content || '')
+      : (data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('') || '');
+    const cleaned = textOut.replace(/```json|```/g,'').trim();
+    let parsed;
+    try{ parsed = JSON.parse(cleaned); }
+    catch(e){ throw new Error('Could not parse the model response'); }
+    if(!parsed.masterPrompt) throw new Error('Master prompt not found');
+    return { parsed, entry };
+  }catch(err){
+    if(err.status === 429 || err.status === 403) entry.keyObj.exhausted = true;
+    err.entry = entry;
+    throw err;
+  }
+}
+
+// Core reusable generation call — fires the prompt at EVERY active key across BOTH
+// providers AT THE SAME TIME (that's still under its TPM budget) and uses whichever
+// one answers first; every other in-flight request is aborted once a winner is picked.
+// Since every key gets the exact same prompt + shared temperature + forced JSON mode
+// (see callGemini/callGroq), it doesn't matter which provider/key wins — the result
+// stays consistent either way.
+// Returns {masterPrompt, concepts, total, cols, rows, usedProvider, usedKeyIdx}
+async function generateOne(name, imagesData, onKeyAttempt){
+  const c = Math.max(1, Math.min(6, parseInt(cols.value)||1));
+  const r = Math.max(1, Math.min(6, parseInt(rows.value)||1));
+  const total = c*r;
+  const systemInstruction = buildSystemInstruction(name, (imagesData||[]).length);
+  const estTokens = estimateRequestTokens(systemInstruction, imagesData);
+
+  const maxPasses = autoRetryMode ? 3 : 1; // extra full rounds to ride out transient errors
+  let winner = null;
+  let lastErrMsg = '';
+
+  for(let pass=0; pass<maxPasses && !winner; pass++){
+    const rawEntries = getAllActiveKeyEntries();
+    if(rawEntries.length === 0) break;
+    if(pass > 0){
+      setStatus(`Auto Retry: trying again with all keys at once (pass ${pass+1})...`);
+      await sleep(1200);
+    }
+
+    // Rate guard: only fire at keys that currently have RPM + TPM room for this
+    // request. If every key is full, wait for the soonest one to free up instead
+    // of burning through the auto-retry pass budget.
+    let entries = rawEntries.filter(e => getKeyCooldownMs(e.provider, e.key, estTokens) === 0);
+    while(entries.length === 0 && rawEntries.length > 0){
+      const waitMs = Math.min(...rawEntries.map(e => getKeyCooldownMs(e.provider, e.key, estTokens)));
+      setStatus(`Waiting ~${Math.ceil(waitMs/1000)}s to avoid the rate/TPM limit...`);
+      await sleep(waitMs);
+      entries = rawEntries.filter(e => getKeyCooldownMs(e.provider, e.key, estTokens) === 0);
+    }
+
+    entries.forEach(e => reserveUsage(e.provider, e.key, estTokens));
+    if(onKeyAttempt) onKeyAttempt(entries);
+
+    const controllers = entries.map(()=> new AbortController());
+    const attempts = entries.map((entry, i) => attemptKeyEntry(entry, systemInstruction, imagesData, controllers[i].signal));
+
+    try{
+      winner = await Promise.any(attempts);
+    }catch(aggErr){
+      const msgs = (aggErr.errors || []).map(e => `${providerGroupLabel(e.entry.provider)} #${e.entry.idx+1}: ${e.message}`);
+      lastErrMsg = msgs.join(' | ');
+    }finally{
+      controllers.forEach((ctrl, i) => { if(!winner || entries[i] !== winner.entry) ctrl.abort(); });
+      renderKeyList();
+    }
+  }
+
+  if(!winner){
+    throw new Error(lastErrMsg || 'Tried all keys/APIs at once, none of them worked.');
+  }
+
+  return {
+    masterPrompt: winner.parsed.masterPrompt,
+    concepts: winner.parsed.concepts || [],
+    total, cols: c, rows: r,
+    usedProvider: winner.entry.provider,
+    usedKeyIdx: winner.entry.idx
+  };
+}
+
+// ---- Single-theme mode ----
+async function generate(){
+  const name = document.getElementById('iconName').value.trim();
+  if(getAllActiveKeyEntries().length === 0){ setStatus('Add at least one Gemini or Groq API key.', true); return; }
+  if(!name && refImagesData.length === 0){ setStatus('Enter an icon name/theme, or provide at least one reference image.', true); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  const c = Math.max(1, Math.min(6, parseInt(cols.value)||1));
+  const r = Math.max(1, Math.min(6, parseInt(rows.value)||1));
+  const total = c*r;
+  resetAllKeyExhaustion();
+
+  // Multiple reference images -> one master prompt per image
+  if(refImagesData.length > 1){
+    document.getElementById('outputCard').style.display = 'none';
+    document.getElementById('batchCard').style.display = 'block';
+    const labels = refImagesData.map((img, i) => img.name || `Image ${i+1}`);
+
+    const { successCount, total: labelTotal } = await runGenerationQueue(
+      labels,
+      (i) => generateOne(name, [refImagesData[i]], (entries)=>{
+        setStatus(`${labels[i]} — trying ${entries.length} key(s)/API(s) at once`);
+      })
+    );
+
+    btn.disabled = false;
+    setStatus(`Prompts finished for ${labelTotal} image(s) — ${successCount}/${labelTotal} succeeded`, successCount < labelTotal);
+    return;
+  }
+
+  // Zero or one reference image -> single master prompt
+  setStatus(`Generating prompt for ${total} icon(s)... (trying all keys/APIs at once)`);
+  document.getElementById('outputCard').style.display = 'none';
+  document.getElementById('batchCard').style.display = 'none';
+
+  try{
+    const result = await generateOne(name, refImagesData, (entries)=>{
+      setStatus(`Generating prompt for ${total} icon(s)... (trying ${entries.length} key(s)/API(s) at once)`);
+    });
+    document.getElementById('outputBox').textContent = result.masterPrompt;
+    document.getElementById('outputCard').style.display = 'block';
+
+    const labels = new Array(result.total).fill('');
+    result.concepts.forEach(c2=>{
+      const i = (c2.row-1)*result.cols + (c2.col-1);
+      if(i>=0 && i<result.total) labels[i] = c2.label || '';
+    });
+    renderGrid(labels);
+    clearStatus();
+    if(result.usedKeyIdx >= 0){
+      setStatus(`✓ ${providerGroupLabel(result.usedProvider)} key #${result.usedKeyIdx+1} responded first`);
+      setTimeout(clearStatus, 2500);
+    }
+  }catch(err){
+    setStatus(err.message || 'Something went wrong, please try again.', true);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// ---- Batch queue mode ----
+let batchResults = []; // [{theme, masterPrompt, concepts, error}]
+
+// Shared runner for "many labeled items -> many master prompts" (batch themes, multi-image).
+// Sequential by default; if Batch Mode is ON and there's more than one active key, runs a
+// concurrent worker pool (one worker per active key) so multiple prompts generate in parallel.
+async function runGenerationQueue(labels, generateItem){
+  document.getElementById('batchExportActions').style.display = 'none';
+  document.getElementById('batchSummary').textContent = `0 / ${labels.length} done`;
+  document.getElementById('batchProgressFill').style.width = '0%';
+  const states = labels.map(()=>({status:'queued', masterPrompt:null, error:null}));
+  renderBatchList(labels, states);
+  resetAllKeyExhaustion();
+
+  batchResults = new Array(labels.length);
+  let doneCount = 0;
+
+  function markProgress(){
+    doneCount++;
+    document.getElementById('batchSummary').textContent = `${doneCount} / ${labels.length} done`;
+    document.getElementById('batchProgressFill').style.width = `${Math.round(doneCount/labels.length*100)}%`;
+    renderBatchList(labels, states);
+  }
+
+  async function runItem(i){
+    states[i].status = 'working';
+    renderBatchList(labels, states);
+    try{
+      const result = await generateItem(i);
+      states[i].status = 'done';
+      states[i].masterPrompt = result.masterPrompt;
+      batchResults[i] = { theme: labels[i], masterPrompt: result.masterPrompt, concepts: result.concepts };
+    }catch(err){
+      states[i].status = 'error';
+      states[i].error = err.message || 'Something went wrong';
+      batchResults[i] = { theme: labels[i], masterPrompt: '', error: states[i].error };
+    }
+    markProgress();
+  }
+
+  const activeKeyCount = getAllActiveKeyEntries().length || 1;
+  if(batchParallelMode && activeKeyCount > 1 && labels.length > 1){
+    const concurrency = Math.min(activeKeyCount, labels.length);
+    let nextIdx = 0;
+    async function worker(){
+      while(nextIdx < labels.length){
+        const idx = nextIdx++;
+        await runItem(idx);
+      }
+    }
+    await Promise.all(Array.from({length: concurrency}, worker));
+  } else {
+    for(let i=0; i<labels.length; i++){
+      await runItem(i);
+    }
+  }
+
+  const successCount = batchResults.filter(r=>r && r.masterPrompt).length;
+  if(successCount > 0){
+    document.getElementById('batchExportActions').style.display = 'flex';
+  }
+  return { successCount, total: labels.length };
+}
+
+function parseBatchThemes(raw){
+  return raw
+    .split(/\r?\n/)
+    .flatMap(line => line.split(','))
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+function renderBatchList(themes, states){
+  const listEl = document.getElementById('batchList');
+  listEl.innerHTML = themes.map((t, i) => {
+    const st = states[i];
+    const statusLabel = {queued:'Queued', working:'Working...', done:'✓ Done', error:'✕ Error'}[st.status];
+    const promptHtml = st.masterPrompt
+      ? `<div class="batch-item-prompt">${st.masterPrompt.replace(/</g,'&lt;')}</div>`
+      : (st.error ? `<div class="batch-item-prompt">${st.error.replace(/</g,'&lt;')}</div>` : '');
+    return `<div class="batch-item" data-idx="${i}">
+      <div class="batch-item-top">
+        <span class="batch-item-name">${(i+1)}. ${t.replace(/</g,'&lt;')}</span>
+        <span class="batch-item-status ${st.status}">${statusLabel}</span>
+      </div>
+      ${promptHtml}
+    </div>`;
+  }).join('');
+  listEl.querySelectorAll('.batch-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      if(item.querySelector('.batch-item-prompt')) item.classList.toggle('expanded');
+    });
+  });
+}
+
+async function runBatchQueue(){
+  const raw = document.getElementById('batchThemes').value.trim();
+  const themes = parseBatchThemes(raw);
+
+  if(getAllActiveKeyEntries().length === 0){ setStatus('Add at least one Gemini or Groq API key.', true); return; }
+  if(themes.length === 0){ setStatus('Theme list is empty — enter one theme per line.', true); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  clearStatus();
+
+  const { successCount, total } = await runGenerationQueue(
+    themes,
+    (i) => generateOne(themes[i], refImagesData, ()=>{})
+  );
+
+  btn.disabled = false;
+  setStatus(`Batch finished — ${successCount}/${total} succeeded`, successCount < total);
+}
+
+function slugify(s){
+  return s.toLowerCase().trim().replace(/[^a-z0-9\u0980-\u09FF]+/g,'-').replace(/^-+|-+$/g,'') || 'theme';
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function exportBatchZip(){
+  const successResults = batchResults.filter(r=>r.masterPrompt);
+  if(successResults.length === 0) return;
+  if(typeof JSZip === 'undefined'){
+    setStatus('ZIP library failed to load, check your internet connection.', true);
+    return;
+  }
+  const zip = new JSZip();
+  successResults.forEach((r, i)=>{
+    const fname = `${String(i+1).padStart(2,'0')}-${slugify(r.theme)}.txt`;
+    zip.file(fname, r.masterPrompt);
+  });
+  const blob = await zip.generateAsync({type:'blob'});
+  downloadBlob(blob, 'grid-forge-batch-prompts.zip');
+}
+
+function csvEscape(v){
+  const s = String(v == null ? '' : v);
+  if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+  return s;
+}
+
+function exportBatchCsv(){
+  if(batchResults.length === 0) return;
+  const rows = [['theme','master_prompt','error']];
+  batchResults.forEach(r=>{
+    rows.push([r.theme, r.masterPrompt || '', r.error || '']);
+  });
+  const csv = rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+  downloadBlob(blob, 'grid-forge-batch-prompts.csv');
+}
+
+document.getElementById('exportZipBtn').addEventListener('click', exportBatchZip);
+document.getElementById('exportCsvBtn').addEventListener('click', exportBatchCsv);
+
+// ---- Bulk Prompt Generator mode (existing images -> recreation prompts) ----
+async function runBulkPromptQueue(){
+  if(getAllActiveKeyEntries().length === 0){ setStatus('Add at least one Gemini or Groq API key.', true); return; }
+  if(bulkImagesData.length === 0){ setStatus('অন্তত একটা ছবি আপলোড করুন।', true); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  clearStatus();
+
+  const labels = bulkImagesData.map((img, i) => img.name || `Image ${i+1}`);
+  const { successCount, total } = await runGenerationQueue(
+    labels,
+    (i) => generateRecreationPrompt(bulkImagesData[i], ()=>{})
+  );
+
+  btn.disabled = false;
+  setStatus(`Batch finished — ${successCount}/${total} succeeded`, successCount < total);
+}
+
+document.getElementById('generateBtn').addEventListener('click', ()=>{
+  if(currentMode === 'batch') runBatchQueue();
+  else if(currentMode === 'bulkprompt') runBulkPromptQueue();
+  else generate();
+});
+document.getElementById('regenBtn').addEventListener('click', generate);
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('outputBox').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{btn.textContent = orig;}, 1500);
+  });
+});
+
+// ==================================================================
+// ---- AI Vectorizer (fully isolated — does not touch any state or
+// ---- element used by the metadata/prompt generator above) ----
+// ---- Main raster-to-vector engine: VTracer (open source, MIT),
+// ---- via a small local backend server (see vtracer_server.py).
+// ---- https://github.com/visioncortex/vtracer
+// ==================================================================
+(function(){
+  const VEC_STORAGE_URL = 'nurmeta_vtracer_backend_url';
+  const DEFAULT_BACKEND_URL = 'http://localhost:8787/vectorize';
+
+  const dropzone = document.getElementById('vecDropzone');
+  const fileInput = document.getElementById('vecFileInput');
+  const sourcePreview = document.getElementById('vecSourcePreview');
+  const resultPreview = document.getElementById('vecResultPreview');
+  const vectorizeBtn = document.getElementById('vectorizeBtn');
+  const downloadBtn = document.getElementById('downloadSvgBtn');
+  const downloadEpsBtn = document.getElementById('downloadEpsBtn');
+  const compareBtn = document.getElementById('vecCompareBtn');
+  const removeBtn = document.getElementById('vecRemoveBtn');
+  const colorModeSelect = document.getElementById('vecColorMode');
+  const detailSlider = document.getElementById('vecDetail');
+  const detailVal = document.getElementById('vecDetailVal');
+  function detailLabel(v){
+    if(v < 34) return 'Low';
+    if(v > 66) return 'High';
+    return 'Medium';
+  }
+  detailSlider.addEventListener('input', ()=>{
+    detailVal.textContent = detailLabel(Number(detailSlider.value));
+  });
+  const smoothnessSlider = document.getElementById('vecSmoothness');
+  const smoothnessVal = document.getElementById('vecSmoothnessVal');
+  function smoothnessLabel(v){
+    if(v < 34) return 'Crisp';
+    if(v > 66) return 'Smooth';
+    return 'Medium';
+  }
+  smoothnessSlider.addEventListener('input', ()=>{
+    smoothnessVal.textContent = smoothnessLabel(Number(smoothnessSlider.value));
+  });
+  const simplifyToggle = document.getElementById('vecSimplifyToggle');
+  const statusEl = document.getElementById('vecStatus');
+
+  let vecSimplifyShapes = true; // detect major shapes/edges before tracing (default on)
+  simplifyToggle.addEventListener('click', ()=>{
+    vecSimplifyShapes = !simplifyToggle.classList.contains('on');
+    simplifyToggle.classList.toggle('on', vecSimplifyShapes);
+    simplifyToggle.setAttribute('aria-checked', String(vecSimplifyShapes));
+  });
+
+  const cleanupToggle = document.getElementById('vecCleanupToggle');
+  let vecCleanupPaths = true; // automatic SVG path cleanup after tracing (default on)
+  cleanupToggle.addEventListener('click', ()=>{
+    vecCleanupPaths = !cleanupToggle.classList.contains('on');
+    cleanupToggle.classList.toggle('on', vecCleanupPaths);
+    cleanupToggle.setAttribute('aria-checked', String(vecCleanupPaths));
+  });
+
+  const microstockToggle = document.getElementById('vecMicrostockToggle');
+  let vecMicrostockClean = false; // "Microstock Clean" mode -- off by default
+  microstockToggle.addEventListener('click', ()=>{
+    vecMicrostockClean = !microstockToggle.classList.contains('on');
+    microstockToggle.classList.toggle('on', vecMicrostockClean);
+    microstockToggle.setAttribute('aria-checked', String(vecMicrostockClean));
+  });
+
+  const bgRemoveToggle = document.getElementById('vecBgRemoveToggle');
+  const bgRemoveOptions = document.getElementById('vecBgRemoveOptions');
+  const bgModeSelect = document.getElementById('vecBgMode');
+  const bgToleranceSlider = document.getElementById('vecBgTolerance');
+  const bgToleranceVal = document.getElementById('vecBgToleranceVal');
+  let vecRemoveBackground = true; // detect & remove a flat background before tracing (default on)
+  bgRemoveToggle.addEventListener('click', ()=>{
+    vecRemoveBackground = !bgRemoveToggle.classList.contains('on');
+    bgRemoveToggle.classList.toggle('on', vecRemoveBackground);
+    bgRemoveToggle.setAttribute('aria-checked', String(vecRemoveBackground));
+    bgRemoveOptions.style.opacity = vecRemoveBackground ? '' : '0.5';
+    saveVecSettings();
+  });
+  bgToleranceSlider.addEventListener('input', ()=>{
+    bgToleranceVal.textContent = bgToleranceSlider.value;
+  });
+
+  const colorCountToggle = document.getElementById('vecColorCountToggle');
+  const colorCountField = document.getElementById('vecColorCountField');
+  const colorCountSlider = document.getElementById('vecColorCount');
+  const colorCountVal = document.getElementById('vecColorCountVal');
+  let vecLimitColors = false; // off by default: Detail level picks the color count
+  let vecColorCount = parseInt(colorCountSlider.value, 10);
+  colorCountToggle.addEventListener('click', ()=>{
+    vecLimitColors = !colorCountToggle.classList.contains('on');
+    colorCountToggle.classList.toggle('on', vecLimitColors);
+    colorCountToggle.setAttribute('aria-checked', String(vecLimitColors));
+    colorCountField.style.display = vecLimitColors ? '' : 'none';
+    saveVecSettings();
+  });
+  colorCountSlider.addEventListener('input', ()=>{
+    vecColorCount = parseInt(colorCountSlider.value, 10);
+    colorCountVal.textContent = String(vecColorCount);
+  });
+  colorCountSlider.addEventListener('change', saveVecSettings);
+
+  // ---- remembers the last-used Detail, Smoothness, Colors (color mode +
+  // limit-colors + count), and Background Removal settings across visits
+  // (this tool's own storage key -- never touches the metadata/prompt
+  // generator's settings or storage above) ----
+  const VEC_STORAGE_SETTINGS = 'nurmeta_vtracer_settings';
+
+  function saveVecSettings(){
+    try{
+      const settings = {
+        detail: detailSlider.value,
+        smoothness: smoothnessSlider.value,
+        colorMode: colorModeSelect.value,
+        limitColors: vecLimitColors,
+        colorCount: vecColorCount,
+        bgRemove: vecRemoveBackground,
+        bgMode: bgModeSelect.value,
+        bgTolerance: bgToleranceSlider.value
+      };
+      localStorage.setItem(VEC_STORAGE_SETTINGS, JSON.stringify(settings));
+    }catch(e){ /* localStorage unavailable -- settings just won't persist */ }
+  }
+
+  function loadVecSettings(){
+    try{
+      const raw = localStorage.getItem(VEC_STORAGE_SETTINGS);
+      if(!raw) return;
+      const s = JSON.parse(raw);
+      if(s.detail != null){
+        detailSlider.value = s.detail;
+        detailVal.textContent = detailLabel(Number(detailSlider.value));
+      }
+      if(s.smoothness != null){
+        smoothnessSlider.value = s.smoothness;
+        smoothnessVal.textContent = smoothnessLabel(Number(smoothnessSlider.value));
+      }
+      if(s.colorMode){
+        colorModeSelect.value = s.colorMode;
+      }
+      if(typeof s.limitColors === 'boolean'){
+        vecLimitColors = s.limitColors;
+        colorCountToggle.classList.toggle('on', vecLimitColors);
+        colorCountToggle.setAttribute('aria-checked', String(vecLimitColors));
+        colorCountField.style.display = vecLimitColors ? '' : 'none';
+      }
+      if(s.colorCount != null){
+        vecColorCount = parseInt(s.colorCount, 10) || vecColorCount;
+        colorCountSlider.value = vecColorCount;
+        colorCountVal.textContent = String(vecColorCount);
+      }
+      if(typeof s.bgRemove === 'boolean'){
+        vecRemoveBackground = s.bgRemove;
+        bgRemoveToggle.classList.toggle('on', vecRemoveBackground);
+        bgRemoveToggle.setAttribute('aria-checked', String(vecRemoveBackground));
+        bgRemoveOptions.style.opacity = vecRemoveBackground ? '' : '0.5';
+      }
+      if(s.bgMode){
+        bgModeSelect.value = s.bgMode;
+      }
+      if(s.bgTolerance != null){
+        bgToleranceSlider.value = s.bgTolerance;
+        bgToleranceVal.textContent = bgToleranceSlider.value;
+      }
+    }catch(e){ /* localStorage unavailable or saved data corrupt -- keep defaults */ }
+  }
+
+  loadVecSettings();
+  detailSlider.addEventListener('change', saveVecSettings);
+  smoothnessSlider.addEventListener('change', saveVecSettings);
+  colorModeSelect.addEventListener('change', saveVecSettings);
+  bgModeSelect.addEventListener('change', saveVecSettings);
+  bgToleranceSlider.addEventListener('change', saveVecSettings);
+
+  const backendUrlInput = document.getElementById('vecBackendUrl');
+  const saveUrlBtn = document.getElementById('vecSaveUrlBtn');
+  const testConnBtn = document.getElementById('vecTestConnBtn');
+
+  let vecFile = null;           // the raw File object, sent to the backend
+  let vecImageDataUrl = null;   // for local <img> preview only
+  let vecSvgString = null;
+
+  // ---- backend URL persistence (this tool's own storage key) ----
+  try{
+    const savedUrl = localStorage.getItem(VEC_STORAGE_URL);
+    backendUrlInput.value = savedUrl || DEFAULT_BACKEND_URL;
+  }catch(e){ /* localStorage unavailable — falls back to the default URL */ }
+
+  saveUrlBtn.addEventListener('click', ()=>{
+    const url = backendUrlInput.value.trim() || DEFAULT_BACKEND_URL;
+    backendUrlInput.value = url;
+    try{ localStorage.setItem(VEC_STORAGE_URL, url); }catch(e){}
+    setVecStatus('Backend URL saved.');
+  });
+
+  testConnBtn.addEventListener('click', async ()=>{
+    const url = backendUrlInput.value.trim() || DEFAULT_BACKEND_URL;
+    const healthUrl = url.replace(/\/vectorize\/?$/, '/health');
+    setVecStatus('Checking connection to the VTracer backend...');
+    try{
+      const resp = await fetch(healthUrl);
+      if(resp.ok){
+        setVecStatus('Connected — the VTracer backend is up and running.');
+      }else{
+        setVecStatus('Backend responded with status ' + resp.status + '. Make sure vtracer_server.py is running.', true);
+      }
+    }catch(e){
+      setVecStatus('Could not reach the VTracer backend at ' + healthUrl + '. Make sure vtracer_server.py is running (see the instructions below the button).', true);
+    }
+  });
+
+  function setVecStatus(msg, isError){
+    if(!msg){ statusEl.classList.remove('show','error'); statusEl.textContent=''; return; }
+    statusEl.textContent = msg;
+    statusEl.classList.add('show');
+    statusEl.classList.toggle('error', !!isError);
+  }
+
+  function resetResult(){
+    vecSvgString = null;
+    resultPreview.innerHTML = '';
+    const ph = document.createElement('div');
+    ph.className = 'vec-placeholder';
+    ph.id = 'vecResultPlaceholder';
+    ph.textContent = 'Vectorized SVG will appear here';
+    resultPreview.appendChild(ph);
+    downloadBtn.disabled = true;
+    downloadEpsBtn.disabled = true;
+    compareBtn.disabled = true;
+    closeCompareModal();
+    hideQualityReport();
+  }
+
+  function showSourcePreview(dataUrl){
+    sourcePreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    sourcePreview.appendChild(img);
+  }
+
+  function handleFile(file){
+    if(!file) return;
+    const okTypes = ['image/jpeg','image/png','image/jpg'];
+    if(okTypes.indexOf(file.type) === -1){
+      setVecStatus('Only JPG or PNG images are supported.', true);
+      return;
+    }
+    vecFile = file;
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      vecImageDataUrl = e.target.result;
+      showSourcePreview(vecImageDataUrl);
+      resetResult();
+      vectorizeBtn.disabled = false;
+      removeBtn.disabled = false;
+      segmentBtn.disabled = false;
+      resetSegmentResult();
+      setVecStatus('');
+    };
+    reader.onerror = ()=>{
+      setVecStatus('Could not read that file. Please try another image.', true);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  dropzone.addEventListener('click', (e)=>{
+    if(e.target !== fileInput) fileInput.click();
+  });
+  fileInput.addEventListener('change', ()=>{
+    if(fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      dropzone.classList.add('dragover');
+    });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      dropzone.classList.remove('dragover');
+    });
+  });
+  dropzone.addEventListener('drop', (e)=>{
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(file) handleFile(file);
+  });
+
+  // ---- continuously interpolates VTracer params across the Detail slider
+  // (0 = Low ... 100 = High), instead of only supporting 3 fixed presets ----
+  // Tuned for flat illustrations, icons, silhouettes, and AI-generated
+  // artwork: higher color_precision at every level keeps flat/AI-art
+  // colors accurate instead of merging close-but-distinct hues; higher
+  // layer_difference avoids extra stacked layers (and their anchor
+  // points) from soft anti-aliased edges/gradient noise AI art often has;
+  // higher filter_speckle drops more stray noise specks for cleaner
+  // shapes. corner_threshold and path_precision are left as before --
+  // they already balance crisp icon corners against smooth curves well.
+  function detailToVtracerParams(detail){
+    const LOW  = { filter_speckle:20, color_precision:5, corner_threshold:40, layer_difference:36, path_precision:4 };
+    const MED  = { filter_speckle:6,  color_precision:7, corner_threshold:60, layer_difference:20, path_precision:6 };
+    const HIGH = { filter_speckle:2,  color_precision:8, corner_threshold:80, layer_difference:10, path_precision:8 };
+    const lerp = (a, b, t)=> a + (b - a) * t;
+    let a, b, t;
+    if(detail <= 50){ a = LOW; b = MED; t = detail / 50; }
+    else{ a = MED; b = HIGH; t = (detail - 50) / 50; }
+    const out = {};
+    Object.keys(a).forEach(k=>{ out[k] = Math.round(lerp(a[k], b[k], t)); });
+    // VTracer's own "spline" mode fits smooth Bezier curves natively (more
+    // accurate than re-deriving curves from a polygon trace afterwards),
+    // so it's used across nearly the whole slider -- only the very bottom
+    // of "Low" switches to "polygon" for a deliberately faceted look.
+    out.mode = detail < 15 ? 'polygon' : 'spline';
+    return out;
+  }
+
+  // ---- continuously interpolates the post-trace smoothing params across
+  // the Smoothness slider (0 = Crisp ... 100 = Smooth) ----
+  // MED/HIGH tolerance nudged up slightly from the previous defaults so
+  // flat-color regions collapse to fewer anchor points by default, while
+  // smooth_corner_angle is unchanged -- it already keeps real icon corners
+  // (right angles etc.) crisp at every level.
+  function smoothnessToParams(smoothness){
+    const LOW  = { smooth_tolerance:0.2, smooth_corner_angle:12 };
+    const MED  = { smooth_tolerance:1.8, smooth_corner_angle:30 };
+    const HIGH = { smooth_tolerance:4.5, smooth_corner_angle:60 };
+    const lerp = (a, b, t)=> a + (b - a) * t;
+    let a, b, t;
+    if(smoothness <= 50){ a = LOW; b = MED; t = smoothness / 50; }
+    else{ a = MED; b = HIGH; t = (smoothness - 50) / 50; }
+    return {
+      smooth_tolerance: Number(lerp(a.smooth_tolerance, b.smooth_tolerance, t).toFixed(2)),
+      smooth_corner_angle: Math.round(lerp(a.smooth_corner_angle, b.smooth_corner_angle, t)),
+    };
+  }
+
+  // ---- maps the simple UI controls to real VTracer parameters ----
+  function getVtracerParams(){
+    const colormode = colorModeSelect.value; // 'color' | 'binary'
+    const detail = Number(detailSlider.value); // 0 (Low) - 100 (High)
+    const preset = detailToVtracerParams(detail);
+    preset.colormode = colormode;
+    preset.hierarchical = 'stacked';
+    preset.length_threshold = 4.0;
+    preset.max_iterations = 10;
+    preset.splice_threshold = 45;
+    // Automatic background removal: detects a flat background (white, or
+    // any solid color in "auto" mode) around the image edges and makes it
+    // transparent before anything else runs.
+    preset.remove_background = vecRemoveBackground;
+    preset.bg_mode = bgModeSelect.value;
+    preset.bg_tolerance = Number(bgToleranceSlider.value);
+    // Shape/edge detection preprocessing: strips pixel-level noise before
+    // VTracer traces, so it only traces the major shapes. Follows the same
+    // Detail slider (low = simplify more, high = simplify less) -- the
+    // backend interpolates its own low/medium/high presets the same way.
+    // A user-chosen color count needs this pass to hit an exact palette
+    // size, so it forces simplify on even if the toggle above is off.
+    preset.simplify = vecSimplifyShapes || vecLimitColors;
+    preset.detail = detail;
+    // Post-trace path smoothing/simplification: how aggressively anchor
+    // points get thinned out (RDP tolerance) and how readily corners get
+    // rounded into flowing curves vs. kept sharp (corner angle threshold).
+    const smoothness = Number(smoothnessSlider.value);
+    Object.assign(preset, smoothnessToParams(smoothness));
+    // Automatic SVG path cleanup after tracing: duplicate/tiny/broken path
+    // removal, redundant node collapsing, and unnecessary overlap removal.
+    preset.cleanup_paths = vecCleanupPaths;
+    // Explicit color-count control (approx. 2-32 colors), overriding the
+    // color count Detail level would otherwise pick.
+    if(vecLimitColors){
+      preset.color_count = vecColorCount;
+    }
+    // "Microstock Clean" mode: tells the backend to force simplify/cleanup/
+    // smoothing on and layer stronger, stock-marketplace-tuned thresholds
+    // on top of everything above (see MICROSTOCK_CLEAN in vtracer_server.py).
+    preset.microstock_clean = vecMicrostockClean;
+    return preset;
+  }
+
+  // ---- backend call to the local VTracer server (real VTracer engine) ----
+  async function vectorizeViaBackend(file){
+    const backendUrl = (backendUrlInput.value.trim() || DEFAULT_BACKEND_URL);
+
+    const form = new FormData();
+    form.append('image', file, file.name || 'upload.png');
+    const params = getVtracerParams();
+    Object.keys(params).forEach(key=>{
+      form.append(key, String(params[key]));
+    });
+
+    let resp;
+    try{
+      resp = await fetch(backendUrl, {
+        method: 'POST',
+        body: form
+      });
+    }catch(networkErr){
+      throw new Error('Could not reach the VTracer backend at ' + backendUrl + '. Make sure vtracer_server.py is running locally, or update the Backend URL above.');
+    }
+
+    if(!resp.ok){
+      let message = 'VTracer backend request failed with status ' + resp.status + '.';
+      try{
+        const errJson = await resp.json();
+        if(errJson && errJson.error){
+          message = errJson.error;
+        }
+      }catch(e){ /* non-JSON error body — keep generic message */ }
+      throw new Error(message);
+    }
+
+    return await resp.text(); // SVG is returned as the raw response body
+  }
+
+  vectorizeBtn.addEventListener('click', async ()=>{
+    if(!vecFile){
+      setVecStatus('Please upload an image first.', true);
+      return;
+    }
+    vectorizeBtn.disabled = true;
+    vectorizeBtn.textContent = 'Vectorizing…';
+    resetSegmentResult(); // a fresh trace invalidates any previously-detected color swatches
+    setVecStatus('Sending image to the VTracer backend — this can take a few seconds...');
+
+    try{
+      const svgstr = await vectorizeViaBackend(vecFile);
+      vecSvgString = svgstr;
+      resultPreview.innerHTML = svgstr;
+      const svgEl = resultPreview.querySelector('svg');
+      if(svgEl){
+        svgEl.style.maxWidth = '100%';
+        svgEl.style.maxHeight = '280px';
+      }
+      downloadBtn.disabled = false;
+      downloadEpsBtn.disabled = false;
+      compareBtn.disabled = false;
+      setVecStatus('Vectorized successfully with VTracer. You can now download the SVG or EPS.');
+      runQualityCheck(svgstr);
+    }catch(err){
+      setVecStatus('Vectorization failed: ' + (err && err.message ? err.message : 'unknown error'), true);
+    }finally{
+      vectorizeBtn.disabled = false;
+      vectorizeBtn.textContent = 'Vectorize';
+    }
+  });
+
+  downloadBtn.addEventListener('click', ()=>{
+    if(!vecSvgString) return;
+    const blob = new Blob([vecSvgString], {type:'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vectorized.svg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  });
+
+  // ---- EPS export: sends the already-generated SVG to the backend, which
+  // converts it to EPS from the same path data (see eps_export.py) --
+  // nothing is re-traced or rasterized, so shapes/colors stay identical
+  // and every path stays a separate, editable object in the .eps too.
+  downloadEpsBtn.addEventListener('click', async ()=>{
+    if(!vecSvgString) return;
+    const backendUrl = (backendUrlInput.value.trim() || DEFAULT_BACKEND_URL);
+    const epsUrl = backendUrl.replace(/\/vectorize\/?$/, '/export_eps');
+    downloadEpsBtn.disabled = true;
+    const originalText = downloadEpsBtn.textContent;
+    downloadEpsBtn.textContent = 'Preparing EPS…';
+    setVecStatus('Converting to EPS...');
+    try{
+      const form = new FormData();
+      form.append('svg', vecSvgString);
+      form.append('title', (vecFile && vecFile.name) ? vecFile.name.replace(/\.[^.]+$/, '') : 'Vectorized Image');
+      const resp = await fetch(epsUrl, { method: 'POST', body: form });
+      if(!resp.ok){
+        let message = 'EPS export failed with status ' + resp.status + '.';
+        try{
+          const errJson = await resp.json();
+          if(errJson && errJson.error) message = errJson.error;
+        }catch(e){ /* non-JSON error body -- keep generic message */ }
+        throw new Error(message);
+      }
+      const blob = await resp.blob();
+      downloadBlob(blob, 'vectorized.eps');
+      setVecStatus('Downloaded vectorized.eps.');
+    }catch(err){
+      setVecStatus('EPS export failed: ' + (err && err.message ? err.message : 'unknown error') + ' Make sure vtracer_server.py is running and up to date.', true);
+    }finally{
+      downloadEpsBtn.disabled = false;
+      downloadEpsBtn.textContent = originalText;
+    }
+  });
+
+  // ---- Color segmentation: detect main colors, group/split paths by color ----
+  const colorMinPctInput = document.getElementById('vecColorMinPct');
+  const colorMinPctVal = document.getElementById('vecColorMinPctVal');
+  const segmentBtn = document.getElementById('vecSegmentBtn');
+  const downloadLayersBtn = document.getElementById('vecDownloadLayersBtn');
+  const swatchesEl = document.getElementById('vecColorSwatches');
+  const segmentStatusEl = document.getElementById('vecSegmentStatus');
+
+  let vecColors = null;        // last-detected palette (from /segment JSON)
+  let vecGroupedSvg = null;    // grouped SVG string (paths wrapped by color)
+  let vecDimmedColors = new Set(); // colors the user has toggled off in the preview
+
+  colorMinPctInput.addEventListener('input', ()=>{
+    colorMinPctVal.textContent = parseFloat(colorMinPctInput.value).toFixed(1) + '%';
+  });
+
+  function setSegmentStatus(msg, isError){
+    if(!msg){ segmentStatusEl.classList.remove('show','error'); segmentStatusEl.textContent=''; return; }
+    segmentStatusEl.textContent = msg;
+    segmentStatusEl.classList.add('show');
+    segmentStatusEl.classList.toggle('error', !!isError);
+  }
+
+  function resetSegmentResult(){
+    vecColors = null;
+    vecGroupedSvg = null;
+    vecDimmedColors = new Set();
+    swatchesEl.innerHTML = '';
+    swatchesEl.style.display = 'none';
+    downloadLayersBtn.disabled = true;
+    setSegmentStatus('');
+  }
+
+  function segmentBackendUrl(){
+    const url = (backendUrlInput.value.trim() || DEFAULT_BACKEND_URL);
+    return url.replace(/\/vectorize\/?$/, '/segment');
+  }
+
+  async function callSegmentBackend(file, extraFields){
+    const form = new FormData();
+    form.append('image', file, file.name || 'upload.png');
+    const params = getVtracerParams();
+    Object.keys(params).forEach(key=> form.append(key, String(params[key])));
+    form.append('min_color_percent', String(parseFloat(colorMinPctInput.value) || 0));
+    Object.keys(extraFields || {}).forEach(key=> form.append(key, String(extraFields[key])));
+
+    let resp;
+    try{
+      resp = await fetch(segmentBackendUrl(), { method: 'POST', body: form });
+    }catch(networkErr){
+      throw new Error('Could not reach the VTracer backend at ' + segmentBackendUrl() + '. Make sure vtracer_server.py is running (it now also needs the /segment route from color_segmentation.py).');
+    }
+    if(!resp.ok){
+      let message = 'Color segmentation failed with status ' + resp.status + '.';
+      try{
+        const errJson = await resp.json();
+        if(errJson && errJson.error) message = errJson.error;
+      }catch(e){ /* non-JSON error body */ }
+      throw new Error(message);
+    }
+    return resp;
+  }
+
+  // paints the grouped SVG into the result preview, honoring any colors
+  // the user has toggled off via the swatches
+  function renderGroupedSvgPreview(){
+    if(!vecGroupedSvg) return;
+    resultPreview.innerHTML = vecGroupedSvg;
+    const svgEl = resultPreview.querySelector('svg');
+    if(svgEl){
+      svgEl.style.maxWidth = '100%';
+      svgEl.style.maxHeight = '280px';
+      vecDimmedColors.forEach(hex=>{
+        svgEl.querySelectorAll('[data-color="' + hex + '"]').forEach(g=>{ g.style.display = 'none'; });
+      });
+    }
+    vecSvgString = vecGroupedSvg; // so "Download SVG"/"Download EPS" grab the color-grouped version too
+    downloadBtn.disabled = false;
+    downloadEpsBtn.disabled = false;
+  }
+
+  function renderSwatches(){
+    swatchesEl.innerHTML = '';
+    if(!vecColors || !vecColors.length){
+      swatchesEl.style.display = 'none';
+      return;
+    }
+    swatchesEl.style.display = 'flex';
+    vecColors.forEach(c=>{
+      const row = document.createElement('div');
+      row.className = 'vec-swatch-row';
+      row.title = 'Click to show/hide this color in the preview';
+      row.innerHTML =
+        '<div class="vec-swatch-chip" style="background:' + c.hex + ';"></div>' +
+        '<div class="vec-swatch-hex">' + c.hex + '</div>' +
+        '<div class="vec-swatch-bar-wrap"><div class="vec-swatch-bar" style="width:' + c.percent + '%;background:' + c.hex + ';"></div></div>' +
+        '<div class="vec-swatch-pct">' + c.percent.toFixed(1) + '%</div>';
+      row.addEventListener('click', ()=>{
+        if(vecDimmedColors.has(c.hex)){ vecDimmedColors.delete(c.hex); }
+        else{ vecDimmedColors.add(c.hex); }
+        row.classList.toggle('dimmed', vecDimmedColors.has(c.hex));
+        renderGroupedSvgPreview();
+      });
+      swatchesEl.appendChild(row);
+    });
+  }
+
+  segmentBtn.addEventListener('click', async ()=>{
+    if(!vecFile){
+      setSegmentStatus('Please upload an image first.', true);
+      return;
+    }
+    segmentBtn.disabled = true;
+    segmentBtn.textContent = 'Segmenting…';
+    setSegmentStatus('Detecting main colors and splitting shapes by color — this can take a few seconds...');
+    try{
+      const resp = await callSegmentBackend(vecFile);
+      const data = await resp.json();
+      vecColors = data.colors || [];
+      vecGroupedSvg = data.svg || null;
+      vecDimmedColors = new Set();
+      renderSwatches();
+      renderGroupedSvgPreview();
+      downloadLayersBtn.disabled = vecColors.length === 0;
+      setSegmentStatus(vecColors.length
+        ? ('Found ' + vecColors.length + ' main color' + (vecColors.length===1?'':'s') + '. Click a swatch to show/hide it in the preview.')
+        : 'No colors above the minimum size were found — try lowering "Minimum color size".');
+    }catch(err){
+      setSegmentStatus('Color segmentation failed: ' + (err && err.message ? err.message : 'unknown error'), true);
+    }finally{
+      segmentBtn.disabled = false;
+      segmentBtn.textContent = 'Detect & Segment Colors';
+    }
+  });
+
+  downloadLayersBtn.addEventListener('click', async ()=>{
+    if(!vecFile) return;
+    downloadLayersBtn.disabled = true;
+    const originalText = downloadLayersBtn.textContent;
+    downloadLayersBtn.textContent = 'Preparing .zip…';
+    try{
+      const resp = await callSegmentBackend(vecFile, {format:'zip'});
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'color_layers.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      setSegmentStatus('Downloaded one SVG layer per main color.');
+    }catch(err){
+      setSegmentStatus('Could not build color layers: ' + (err && err.message ? err.message : 'unknown error'), true);
+    }finally{
+      downloadLayersBtn.disabled = false;
+      downloadLayersBtn.textContent = originalText;
+    }
+  });
+
+  removeBtn.addEventListener('click', ()=>{
+    vecFile = null;
+    vecImageDataUrl = null;
+    fileInput.value = '';
+    sourcePreview.innerHTML = '';
+    const ph = document.createElement('div');
+    ph.className = 'vec-placeholder';
+    ph.id = 'vecSourcePlaceholder';
+    ph.textContent = 'Preview will appear here';
+    sourcePreview.appendChild(ph);
+    resetResult();
+    vectorizeBtn.disabled = true;
+    downloadBtn.disabled = true;
+    downloadEpsBtn.disabled = true;
+    compareBtn.disabled = true;
+    closeCompareModal();
+    removeBtn.disabled = true;
+    segmentBtn.disabled = true;
+    resetSegmentResult();
+    setVecStatus('');
+  });
+
+  // ---- Before/After Comparison Modal ----
+  const compareOverlay = document.getElementById('vecCompareOverlay');
+  const compareCloseBtn = document.getElementById('vecCompareCloseBtn');
+  const compareTabs = document.getElementById('vecCompareTabs');
+  const compareStage = document.getElementById('vecCompareStage');
+  const compareSideGrid = document.getElementById('vecCompareSideGrid');
+  const cmpAfterImg = document.getElementById('vecCmpAfterImg');
+  const cmpBeforeImg = document.getElementById('vecCmpBeforeImg');
+  const cmpDivider = document.getElementById('vecCmpDivider');
+  const cmpHandle = document.getElementById('vecCmpHandle');
+  const cmpSideBefore = document.getElementById('vecCmpSideBefore');
+  const cmpSideAfter = document.getElementById('vecCmpSideAfter');
+
+  function svgStringToDataUrl(svgStr){
+    const cleaned = svgStr.replace(/[\r\n\t]+/g, ' ');
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(cleaned);
+  }
+
+  function setComparePosition(pct){
+    pct = Math.max(0, Math.min(100, pct));
+    cmpBeforeImg.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+    cmpDivider.style.left = pct + '%';
+    cmpHandle.style.left = pct + '%';
+  }
+
+  function openCompareModal(){
+    if(!vecImageDataUrl || !vecSvgString){
+      setVecStatus('Vectorize an image first to compare before and after.', true);
+      return;
+    }
+    const svgDataUrl = svgStringToDataUrl(vecSvgString);
+    cmpAfterImg.src = svgDataUrl;
+    cmpBeforeImg.src = vecImageDataUrl;
+    cmpSideBefore.src = vecImageDataUrl;
+    cmpSideAfter.src = svgDataUrl;
+    setComparePosition(50);
+    compareOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCompareModal(){
+    if(!compareOverlay) return;
+    compareOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  compareBtn.addEventListener('click', openCompareModal);
+  compareCloseBtn.addEventListener('click', closeCompareModal);
+  compareOverlay.addEventListener('click', (e)=>{
+    if(e.target === compareOverlay) closeCompareModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && compareOverlay.classList.contains('open')) closeCompareModal();
+  });
+
+  compareTabs.addEventListener('click', (e)=>{
+    const tab = e.target.closest('.vec-compare-tab');
+    if(!tab) return;
+    compareTabs.querySelectorAll('.vec-compare-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const view = tab.dataset.view;
+    compareStage.style.display = view === 'slider' ? '' : 'none';
+    compareSideGrid.style.display = view === 'side' ? '' : 'none';
+  });
+
+  // ---- drag-to-compare handle (mouse + touch) ----
+  let cmpDragging = false;
+  function pctFromClientX(clientX){
+    const rect = compareStage.getBoundingClientRect();
+    return ((clientX - rect.left) / rect.width) * 100;
+  }
+  function onCmpPointerDown(e){
+    cmpDragging = true;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    setComparePosition(pctFromClientX(clientX));
+    e.preventDefault();
+  }
+  function onCmpPointerMove(e){
+    if(!cmpDragging) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    setComparePosition(pctFromClientX(clientX));
+  }
+  function onCmpPointerUp(){ cmpDragging = false; }
+
+  cmpHandle.addEventListener('mousedown', onCmpPointerDown);
+  compareStage.addEventListener('mousedown', onCmpPointerDown);
+  window.addEventListener('mousemove', onCmpPointerMove);
+  window.addEventListener('mouseup', onCmpPointerUp);
+
+  cmpHandle.addEventListener('touchstart', onCmpPointerDown, {passive:false});
+  compareStage.addEventListener('touchstart', onCmpPointerDown, {passive:false});
+  window.addEventListener('touchmove', onCmpPointerMove, {passive:false});
+  window.addEventListener('touchend', onCmpPointerUp);
+
+  // ---- Vector Quality Check ----
+  // Runs entirely client-side against the exact SVG markup the backend
+  // returned. Doesn't mutate anything -- purely diagnostic.
+  const qualityCard = document.getElementById('vecQualityCard');
+  const qualityBadge = document.getElementById('vecQualityBadge');
+  const qualityStats = document.getElementById('vecQualityStats');
+  const qualityList = document.getElementById('vecQualityList');
+  const qualityStatusEl = document.getElementById('vecQualityStatus');
+  const recheckBtn = document.getElementById('vecRecheckBtn');
+
+  // Thresholds (tuned for typical icon/logo-scale VTracer output, not photos)
+  const QUALITY_MAX_ANCHORS_PER_PATH = 300;   // a single path this dense is likely over-detailed
+  const QUALITY_TINY_AREA_PCT = 0.00015;      // bbox area vs total canvas area -> "stray speck"
+  const QUALITY_MAX_LIST_ITEMS = 25;          // cap on how many items we list per check
+
+  function setQualityStatus(msg, isError){
+    if(!msg){ qualityStatusEl.classList.remove('show','error'); qualityStatusEl.textContent=''; return; }
+    qualityStatusEl.textContent = msg;
+    qualityStatusEl.classList.add('show');
+    qualityStatusEl.classList.toggle('error', !!isError);
+  }
+
+  function hideQualityReport(){
+    qualityCard.style.display = 'none';
+    qualityList.innerHTML = '';
+    qualityBadge.textContent = '—';
+    qualityBadge.className = 'vec-quality-badge';
+    qualityStats.innerHTML = '';
+    recheckBtn.disabled = true;
+    setQualityStatus('');
+  }
+
+  // Parses an absolute/relative M/L/C/Z `d` string into on-curve anchor
+  // points + a rough bounding box (control points included, so the bbox is
+  // a safe over-estimate rather than an exact tight fit).
+  function parsePathD(d){
+    const result = { anchors: [], closed: false, valid: false, bbox: null, subpaths: 0 };
+    if(!d || !d.trim()) return result;
+    if(/NaN|Infinity/i.test(d)) return result; // non-finite coordinates -> broken
+    const tokens = d.match(/[MLCZmlcz]|-?\d*\.?\d+(?:[eE][-+]?\d+)?/g);
+    if(!tokens || !tokens.length) return result;
+
+    let i = 0, n = tokens.length, cmd = null;
+    let cx = 0, cy = 0, startX = 0, startY = 0;
+    let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+    let anyPoint = false, sane = true;
+
+    function markPoint(x, y){
+      if(!isFinite(x) || !isFinite(y)){ sane = false; return; }
+      result.anchors.push([x, y]);
+      anyPoint = true;
+      if(x < minX) minX = x; if(x > maxX) maxX = x;
+      if(y < minY) minY = y; if(y > maxY) maxY = y;
+    }
+    function markRaw(x, y){ // control points: widen bbox only, not an anchor
+      if(!isFinite(x) || !isFinite(y)) return;
+      if(x < minX) minX = x; if(x > maxX) maxX = x;
+      if(y < minY) minY = y; if(y > maxY) maxY = y;
+    }
+
+    while(i < n){
+      const t = tokens[i];
+      if(/^[MLCZmlcz]$/.test(t)){
+        cmd = t; i++;
+        if(cmd === 'Z' || cmd === 'z'){ result.closed = true; cx = startX; cy = startY; continue; }
+        continue;
+      }
+      if(cmd === null){ i++; continue; }
+      if(cmd === 'M' || cmd === 'm'){
+        if(i + 1 >= n){ sane = false; break; }
+        const x = parseFloat(tokens[i]), y = parseFloat(tokens[i+1]); i += 2;
+        if(cmd === 'm' && result.subpaths > 0){ cx += x; cy += y; } else { cx = x; cy = y; }
+        startX = cx; startY = cy; result.subpaths++;
+        markPoint(cx, cy);
+        cmd = (cmd === 'M') ? 'L' : 'l'; // implicit lineto for extra coord pairs
+      } else if(cmd === 'L' || cmd === 'l'){
+        if(i + 1 >= n){ sane = false; break; }
+        const x = parseFloat(tokens[i]), y = parseFloat(tokens[i+1]); i += 2;
+        if(cmd === 'l'){ cx += x; cy += y; } else { cx = x; cy = y; }
+        markPoint(cx, cy);
+      } else if(cmd === 'C' || cmd === 'c'){
+        if(i + 5 >= n){ sane = false; break; }
+        const x1=parseFloat(tokens[i]), y1=parseFloat(tokens[i+1]);
+        const x2=parseFloat(tokens[i+2]), y2=parseFloat(tokens[i+3]);
+        const x=parseFloat(tokens[i+4]), y=parseFloat(tokens[i+5]);
+        i += 6;
+        let cx1,cy1,cx2,cy2,ex,ey;
+        if(cmd === 'c'){ cx1=cx+x1; cy1=cy+y1; cx2=cx+x2; cy2=cy+y2; ex=cx+x; ey=cy+y; }
+        else { cx1=x1; cy1=y1; cx2=x2; cy2=y2; ex=x; ey=y; }
+        markRaw(cx1, cy1); markRaw(cx2, cy2);
+        cx = ex; cy = ey;
+        markPoint(cx, cy);
+      } else {
+        i++; // unrecognized token in this position -- skip rather than hard-fail
+      }
+    }
+
+    result.valid = sane && anyPoint;
+    if(anyPoint){
+      result.bbox = { minX, minY, maxX, maxY, w: Math.max(0, maxX-minX), h: Math.max(0, maxY-minY) };
+    }
+    return result;
+  }
+
+  // Walks up from a path element to resolve its effective fill (inline
+  // style wins, then fill attribute, then ancestor groups, then SVG default).
+  function resolveFill(el){
+    let node = el;
+    while(node && node.nodeType === 1){
+      const styleFill = node.style && node.style.fill;
+      if(styleFill) return styleFill;
+      const attrFill = node.getAttribute && node.getAttribute('fill');
+      if(attrFill) return attrFill;
+      node = node.parentElement;
+    }
+    return '#000000'; // SVG's own default when nothing specifies fill
+  }
+
+  function analyzeSvg(svgStr){
+    const report = {
+      parseError: false,
+      totalPaths: 0,
+      totalAnchors: 0,
+      excessiveAnchors: [],  // [{label, count}]
+      tinyObjects: [],       // [{label, areaPct}]
+      duplicates: [],        // [{label, count}]
+      openPaths: [],         // [{label}]
+      broken: [],            // [{label, reason}]
+    };
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgStr, 'image/svg+xml');
+    if(doc.querySelector('parsererror')){
+      report.parseError = true;
+      report.broken.push({ label: 'Document', reason: 'The SVG failed to parse as valid XML.' });
+      return report;
+    }
+
+    const svgEl = doc.querySelector('svg');
+    let totalArea = null;
+    if(svgEl){
+      const vb = (svgEl.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+      if(vb.length === 4 && vb.every(v => isFinite(v))){
+        totalArea = Math.abs(vb[2] * vb[3]);
+      } else {
+        const w = parseFloat(svgEl.getAttribute('width'));
+        const h = parseFloat(svgEl.getAttribute('height'));
+        if(isFinite(w) && isFinite(h)) totalArea = Math.abs(w * h);
+      }
+    }
+
+    const paths = Array.from(doc.querySelectorAll('path'));
+    report.totalPaths = paths.length;
+
+    const seen = new Map(); // normalized "d|fill" -> [labels]
+
+    paths.forEach((el, idx)=>{
+      const label = 'Path #' + (idx + 1);
+      const d = el.getAttribute('d');
+
+      if(!d || !d.trim()){
+        report.broken.push({ label, reason: 'Missing or empty "d" attribute.' });
+        return;
+      }
+
+      const parsed = parsePathD(d);
+      if(!parsed.valid || parsed.anchors.length < 2 || !parsed.bbox || (parsed.bbox.w === 0 && parsed.bbox.h === 0)){
+        report.broken.push({ label, reason: !parsed.valid ? 'Unparseable or non-finite path data.' : 'Degenerate path (no area / fewer than 2 points).' });
+        return;
+      }
+
+      report.totalAnchors += parsed.anchors.length;
+
+      if(parsed.anchors.length > QUALITY_MAX_ANCHORS_PER_PATH){
+        report.excessiveAnchors.push({ label, count: parsed.anchors.length });
+      }
+
+      if(totalArea && totalArea > 0){
+        const area = parsed.bbox.w * parsed.bbox.h;
+        const pct = area / totalArea;
+        if(pct < QUALITY_TINY_AREA_PCT){
+          report.tinyObjects.push({ label, areaPct: pct * 100 });
+        }
+      }
+
+      const fill = (resolveFill(el) || '').toLowerCase().replace(/\s+/g,'');
+      if(!parsed.closed && fill !== 'none'){
+        report.openPaths.push({ label });
+      }
+
+      const normD = d.trim().replace(/\s+/g,' ').replace(/(-?\d+\.\d{2})\d+/g, '$1');
+      const key = normD + '|' + fill;
+      if(!seen.has(key)) seen.set(key, []);
+      seen.get(key).push(label);
+    });
+
+    seen.forEach((labels)=>{
+      if(labels.length > 1){
+        report.duplicates.push({ label: labels.join(', '), count: labels.length });
+      }
+    });
+
+    // Broken/degenerate check across other drawable elements too (rects,
+    // circles, etc. with zero or negative size slip through path-only scans).
+    Array.from(doc.querySelectorAll('rect, circle, ellipse')).forEach((el, idx)=>{
+      const tag = el.tagName.toLowerCase();
+      if(tag === 'rect'){
+        const w = parseFloat(el.getAttribute('width'));
+        const h = parseFloat(el.getAttribute('height'));
+        if((isFinite(w) && w <= 0) || (isFinite(h) && h <= 0)){
+          report.broken.push({ label: 'rect #' + (idx+1), reason: 'Zero or negative width/height.' });
+        }
+      } else {
+        const rAttrs = tag === 'circle' ? ['r'] : ['rx','ry'];
+        rAttrs.forEach(a=>{
+          const v = parseFloat(el.getAttribute(a));
+          if(isFinite(v) && v <= 0){
+            report.broken.push({ label: tag + ' #' + (idx+1), reason: 'Zero or negative "' + a + '".' });
+          }
+        });
+      }
+    });
+
+    return report;
+  }
+
+  function qualityRow(status, title, count, desc, details){
+    const row = document.createElement('div');
+    const expandable = details && details.length > 0;
+    row.className = 'vec-quality-row' + (expandable ? ' expandable' : '');
+
+    const head = document.createElement('div');
+    head.className = 'vec-quality-row-head';
+
+    const icon = document.createElement('div');
+    icon.className = 'vec-quality-icon ' + status;
+    icon.textContent = status === 'pass' ? '✓' : (status === 'fail' ? '✕' : '!');
+    head.appendChild(icon);
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'vec-quality-row-title';
+    titleEl.textContent = title;
+    head.appendChild(titleEl);
+
+    const countEl = document.createElement('div');
+    countEl.className = 'vec-quality-row-count';
+    countEl.textContent = count;
+    head.appendChild(countEl);
+
+    if(expandable){
+      const caret = document.createElement('div');
+      caret.className = 'vec-quality-caret';
+      caret.textContent = '▶';
+      head.appendChild(caret);
+      head.addEventListener('click', ()=> row.classList.toggle('open'));
+    }
+
+    row.appendChild(head);
+
+    const descEl = document.createElement('div');
+    descEl.className = 'vec-quality-row-desc';
+    descEl.textContent = desc;
+    row.appendChild(descEl);
+
+    if(expandable){
+      const detail = document.createElement('div');
+      detail.className = 'vec-quality-detail';
+      const shown = details.slice(0, QUALITY_MAX_LIST_ITEMS);
+      shown.forEach(line=>{
+        const lineEl = document.createElement('div');
+        lineEl.textContent = line;
+        detail.appendChild(lineEl);
+      });
+      if(details.length > shown.length){
+        const moreEl = document.createElement('div');
+        moreEl.textContent = '+ ' + (details.length - shown.length) + ' more';
+        detail.appendChild(moreEl);
+      }
+      row.appendChild(detail);
+    }
+
+    return row;
+  }
+
+  function renderQualityReport(report){
+    qualityList.innerHTML = '';
+
+    if(report.parseError){
+      qualityBadge.textContent = 'Failed to parse';
+      qualityBadge.className = 'vec-quality-badge fail';
+      qualityStats.innerHTML = '';
+      qualityList.appendChild(qualityRow('fail', 'SVG document is malformed', '', 'The returned SVG could not be parsed as XML. Try vectorizing again, or check the backend server logs.', null));
+      qualityCard.style.display = '';
+      return;
+    }
+
+    const issueCount = report.excessiveAnchors.length + report.tinyObjects.length +
+      report.duplicates.length + report.openPaths.length + report.broken.length;
+
+    qualityBadge.className = 'vec-quality-badge ' + (report.broken.length > 0 ? 'fail' : (issueCount > 0 ? 'warn' : 'pass'));
+    qualityBadge.textContent = report.broken.length > 0 ? 'Issues found' : (issueCount > 0 ? 'Minor issues' : 'Looks clean');
+
+    const avgAnchors = report.totalPaths ? (report.totalAnchors / report.totalPaths) : 0;
+    qualityStats.innerHTML =
+      '<span><b>' + report.totalPaths + '</b> paths</span>' +
+      '<span><b>' + report.totalAnchors.toLocaleString() + '</b> anchor points</span>' +
+      '<span><b>' + avgAnchors.toFixed(1) + '</b> avg / path</span>';
+
+    qualityList.appendChild(qualityRow(
+      report.broken.length ? 'fail' : 'pass',
+      'Broken / degenerate elements',
+      report.broken.length,
+      report.broken.length
+        ? 'Elements with missing, non-finite, or zero-area geometry. These can fail to render or render as invisible.'
+        : 'No broken or degenerate elements found.',
+      report.broken.map(b => b.label + ' — ' + b.reason)
+    ));
+
+    qualityList.appendChild(qualityRow(
+      report.openPaths.length ? 'warn' : 'pass',
+      'Open (unclosed) filled paths',
+      report.openPaths.length,
+      report.openPaths.length
+        ? 'These paths have a fill but no closing "Z" — the renderer auto-closes them with a straight line, which can leave a visible seam or wrong silhouette.'
+        : 'All filled paths are properly closed.',
+      report.openPaths.map(o => o.label)
+    ));
+
+    qualityList.appendChild(qualityRow(
+      report.duplicates.length ? 'warn' : 'pass',
+      'Duplicate paths',
+      report.duplicates.length,
+      report.duplicates.length
+        ? 'Groups of paths with identical geometry and fill color — the extras add file size without changing how the image looks.'
+        : 'No duplicate paths found.',
+      report.duplicates.map(d => d.label + ' — ' + d.count + '× identical')
+    ));
+
+    qualityList.appendChild(qualityRow(
+      report.tinyObjects.length ? 'warn' : 'pass',
+      'Tiny / stray objects',
+      report.tinyObjects.length,
+      report.tinyObjects.length
+        ? 'Specks covering under ' + (QUALITY_TINY_AREA_PCT*100).toFixed(3) + '% of the canvas — often stray "confetti" left by noisy source pixels.'
+        : 'No stray speck-sized objects found.',
+      report.tinyObjects.map(t => t.label + ' — ' + t.areaPct.toFixed(4) + '% of canvas')
+    ));
+
+    qualityList.appendChild(qualityRow(
+      report.excessiveAnchors.length ? 'warn' : 'pass',
+      'Excessive anchor points',
+      report.excessiveAnchors.length,
+      report.excessiveAnchors.length
+        ? 'Paths with more than ' + QUALITY_MAX_ANCHORS_PER_PATH + ' anchor points — very dense geometry that bloats file size and can slow down editors.'
+        : 'No individual path is unusually dense.',
+      report.excessiveAnchors.map(a => a.label + ' — ' + a.count.toLocaleString() + ' anchors')
+    ));
+
+    qualityCard.style.display = '';
+  }
+
+  function runQualityCheck(svgStr){
+    if(!svgStr){ hideQualityReport(); return; }
+    qualityCard.style.display = '';
+    setQualityStatus('Analyzing vector output...');
+    recheckBtn.disabled = true;
+    // Deferred a tick so the "Analyzing..." status actually paints before
+    // the (synchronous) parse/scan work runs on larger SVGs.
+    setTimeout(()=>{
+      try{
+        const report = analyzeSvg(svgStr);
+        renderQualityReport(report);
+        setQualityStatus('');
+      }catch(err){
+        setQualityStatus('Quality check failed: ' + (err && err.message ? err.message : 'unknown error'), true);
+      }finally{
+        recheckBtn.disabled = false;
+      }
+    }, 10);
+  }
+
+  recheckBtn.addEventListener('click', ()=>{
+    if(!vecSvgString){
+      setQualityStatus('Vectorize an image first.', true);
+      return;
+    }
+    runQualityCheck(vecSvgString);
+  });
+
+  // ==================================================================
+  // ---- Batch Vectorization: upload many JPG/PNG files, convert each
+  // ---- one at a time through the same backend + settings as the single
+  // ---- image flow above (getVtracerParams / vectorizeViaBackend), show
+  // ---- per-file + overall progress, then zip everything up with JSZip
+  // ---- (already loaded on the page for the prompt-generator's batch
+  // ---- export). Fully isolated from vecFile/vecSvgString above so it
+  // ---- never disturbs the single-image preview/result state. ----
+  // ==================================================================
+  const batchDropzone = document.getElementById('vecBatchDropzone');
+  const batchFileInput = document.getElementById('vecBatchFileInput');
+  const batchEpsToggle = document.getElementById('vecBatchEpsToggle');
+  const batchProgressFill = document.getElementById('vecBatchProgressFill');
+  const batchSummaryEl = document.getElementById('vecBatchSummary');
+  const batchListEl = document.getElementById('vecBatchList');
+  const batchStartBtn = document.getElementById('vecBatchStartBtn');
+  const batchClearBtn = document.getElementById('vecBatchClearBtn');
+  const batchDownloadZipBtn = document.getElementById('vecBatchDownloadZipBtn');
+  const batchStatusEl = document.getElementById('vecBatchStatus');
+
+  let vecBatchExportEps = false; // off by default -- SVG only unless toggled on
+  batchEpsToggle.addEventListener('click', ()=>{
+    vecBatchExportEps = !batchEpsToggle.classList.contains('on');
+    batchEpsToggle.classList.toggle('on', vecBatchExportEps);
+    batchEpsToggle.setAttribute('aria-checked', String(vecBatchExportEps));
+  });
+
+  // Each queue item: { id, file, name, status: queued|working|done|error, svgString, epsBlob, error }
+  let vecBatchQueue = [];
+  let vecBatchRunning = false;
+  let vecBatchIdCounter = 0;
+
+  function setBatchStatus(msg, isError){
+    if(!msg){ batchStatusEl.classList.remove('show','error'); batchStatusEl.textContent=''; return; }
+    batchStatusEl.textContent = msg;
+    batchStatusEl.classList.add('show');
+    batchStatusEl.classList.toggle('error', !!isError);
+  }
+
+  function batchStatusLabel(status){
+    if(status === 'queued') return 'Queued';
+    if(status === 'working') return 'Working…';
+    if(status === 'done') return 'Done';
+    if(status === 'error') return 'Failed';
+    return status;
+  }
+
+  function renderBatchList(){
+    batchListEl.innerHTML = '';
+    vecBatchQueue.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'batch-item';
+      row.innerHTML = `
+        <div class="batch-item-top">
+          <div class="batch-item-name">${escapeHtml(item.name)}</div>
+          <div class="batch-item-status ${item.status}">${batchStatusLabel(item.status)}</div>
+        </div>
+        ${item.status === 'error' && item.error ? `<div class="batch-item-prompt" style="display:block;color:var(--danger);">${escapeHtml(item.error)}</div>` : ''}
+      `;
+      batchListEl.appendChild(row);
+    });
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : String(str);
+    return d.innerHTML;
+  }
+
+  function updateBatchSummary(){
+    const total = vecBatchQueue.length;
+    if(total === 0){
+      batchSummaryEl.textContent = 'No files added yet.';
+      batchProgressFill.style.width = '0%';
+      return;
+    }
+    const done = vecBatchQueue.filter(i=>i.status==='done').length;
+    const failed = vecBatchQueue.filter(i=>i.status==='error').length;
+    const settled = done + failed;
+    batchSummaryEl.textContent = `${settled} / ${total} processed — ${done} completed, ${failed} failed`;
+    batchProgressFill.style.width = `${Math.round(settled/total*100)}%`;
+  }
+
+  function refreshBatchButtons(){
+    const total = vecBatchQueue.length;
+    const done = vecBatchQueue.filter(i=>i.status==='done').length;
+    batchStartBtn.disabled = vecBatchRunning || total === 0 || vecBatchQueue.every(i=>i.status==='done' || i.status==='error');
+    batchClearBtn.disabled = vecBatchRunning || total === 0;
+    batchDownloadZipBtn.disabled = vecBatchRunning || done === 0;
+  }
+
+  function addFilesToBatch(fileList){
+    const okTypes = ['image/jpeg','image/png','image/jpg'];
+    const files = Array.from(fileList || []).filter(f=>okTypes.indexOf(f.type) !== -1);
+    if(files.length === 0){
+      setBatchStatus('Only JPG or PNG images are supported.', true);
+      return;
+    }
+    files.forEach(file=>{
+      vecBatchQueue.push({
+        id: ++vecBatchIdCounter,
+        file,
+        name: file.name || 'image.png',
+        status: 'queued',
+        svgString: null,
+        epsBlob: null,
+        error: null
+      });
+    });
+    setBatchStatus('');
+    renderBatchList();
+    updateBatchSummary();
+    refreshBatchButtons();
+  }
+
+  batchDropzone.addEventListener('click', (e)=>{
+    if(e.target !== batchFileInput) batchFileInput.click();
+  });
+  batchFileInput.addEventListener('change', ()=>{
+    addFilesToBatch(batchFileInput.files);
+    batchFileInput.value = '';
+  });
+  ['dragenter','dragover'].forEach(evt=>{
+    batchDropzone.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      batchDropzone.classList.add('dragover');
+    });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    batchDropzone.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      batchDropzone.classList.remove('dragover');
+    });
+  });
+  batchDropzone.addEventListener('drop', (e)=>{
+    const files = e.dataTransfer && e.dataTransfer.files;
+    if(files && files.length) addFilesToBatch(files);
+  });
+
+  // ---- exports the already-traced SVG for one batch item to EPS, reusing
+  // the same /export_eps backend endpoint as the single-image flow ----
+  async function exportBatchItemEps(item){
+    const backendUrl = (backendUrlInput.value.trim() || DEFAULT_BACKEND_URL);
+    const epsUrl = backendUrl.replace(/\/vectorize\/?$/, '/export_eps');
+    const form = new FormData();
+    form.append('svg', item.svgString);
+    form.append('title', item.name.replace(/\.[^.]+$/, ''));
+    const resp = await fetch(epsUrl, { method: 'POST', body: form });
+    if(!resp.ok){
+      let message = 'EPS export failed with status ' + resp.status + '.';
+      try{
+        const errJson = await resp.json();
+        if(errJson && errJson.error) message = errJson.error;
+      }catch(e){ /* non-JSON error body -- keep generic message */ }
+      throw new Error(message);
+    }
+    return await resp.blob();
+  }
+
+  async function runBatch(){
+    if(vecBatchRunning) return;
+    const pending = vecBatchQueue.filter(i=>i.status==='queued' || i.status==='error');
+    if(pending.length === 0){
+      setBatchStatus('Nothing left to vectorize — add more files or clear the queue.', true);
+      return;
+    }
+    vecBatchRunning = true;
+    batchStartBtn.disabled = true;
+    batchStartBtn.textContent = 'Vectorizing…';
+    batchClearBtn.disabled = true;
+    batchDownloadZipBtn.disabled = true;
+    setBatchStatus(`Processing ${pending.length} file${pending.length===1?'':'s'} through the VTracer backend — this can take a while for large batches...`);
+
+    for(const item of pending){
+      item.status = 'working';
+      item.error = null;
+      renderBatchList();
+      try{
+        const svgstr = await vectorizeViaBackend(item.file);
+        item.svgString = svgstr;
+        if(vecBatchExportEps){
+          item.epsBlob = await exportBatchItemEps(item);
+        }
+        item.status = 'done';
+      }catch(err){
+        item.status = 'error';
+        item.error = (err && err.message) ? err.message : 'Unknown error';
+      }
+      renderBatchList();
+      updateBatchSummary();
+    }
+
+    vecBatchRunning = false;
+    batchStartBtn.textContent = 'Vectorize All';
+    const done = vecBatchQueue.filter(i=>i.status==='done').length;
+    const failed = vecBatchQueue.filter(i=>i.status==='error').length;
+    setBatchStatus(`Batch finished — ${done} completed, ${failed} failed.` + (failed>0 ? ' Click "Vectorize All" again to retry the failed files.' : ''), failed>0);
+    refreshBatchButtons();
+  }
+
+  batchStartBtn.addEventListener('click', runBatch);
+
+  batchClearBtn.addEventListener('click', ()=>{
+    if(vecBatchRunning) return;
+    vecBatchQueue = [];
+    renderBatchList();
+    updateBatchSummary();
+    refreshBatchButtons();
+    setBatchStatus('');
+  });
+
+  batchDownloadZipBtn.addEventListener('click', async ()=>{
+    const completed = vecBatchQueue.filter(i=>i.status==='done' && i.svgString);
+    if(completed.length === 0){
+      setBatchStatus('No completed files to download yet.', true);
+      return;
+    }
+    if(typeof JSZip === 'undefined'){
+      setBatchStatus('JSZip failed to load, so the batch can\'t be zipped. Check your internet connection and reload.', true);
+      return;
+    }
+    batchDownloadZipBtn.disabled = true;
+    const originalText = batchDownloadZipBtn.textContent;
+    batchDownloadZipBtn.textContent = 'Zipping…';
+    try{
+      const zip = new JSZip();
+      const usedNames = new Set();
+      completed.forEach(item=>{
+        let base = item.name.replace(/\.[^.]+$/, '') || 'vectorized';
+        let candidate = base;
+        let n = 1;
+        while(usedNames.has(candidate)){ candidate = `${base}_${n++}`; }
+        usedNames.add(candidate);
+        zip.file(`${candidate}.svg`, item.svgString);
+        if(item.epsBlob){
+          zip.file(`${candidate}.eps`, item.epsBlob);
+        }
+      });
+      const blob = await zip.generateAsync({type:'blob'});
+      downloadBlob(blob, 'vectorized_batch.zip');
+      setBatchStatus(`Downloaded vectorized_batch.zip with ${completed.length} file${completed.length===1?'':'s'}.`);
+    }catch(err){
+      setBatchStatus('Could not build the zip: ' + (err && err.message ? err.message : 'unknown error'), true);
+    }finally{
+      batchDownloadZipBtn.disabled = false;
+      batchDownloadZipBtn.textContent = originalText;
+      refreshBatchButtons();
+    }
+  });
+})();
+</script>
+</body>
+</html>
